@@ -150,64 +150,9 @@ func (cpu *CPU) Add(dest, src1, src2 string) {
 	cpu.SetRegister(dest, v1+v2)
 }
 
-func (cpu *CPU) Sub(dest, src1, src2 string) {
-	v1 := cpu.GetRegister(src1)
-	v2 := cpu.GetRegister(src2)
-	cpu.SetRegister(dest, v1-v2)
-}
-
-func (cpu *CPU) Mult(dest, src1, src2 string) {
-	v1 := cpu.GetRegister(src1)
-	v2 := cpu.GetRegister(src2)
-	cpu.SetRegister(dest, v1*v2)
-}
-
-func (cpu *CPU) Multu(dest, src1, src2 string) {
-	v1 := uint16(cpu.GetRegister(src1))
-	v2 := uint16(cpu.GetRegister(src2))
-	cpu.SetRegister(dest, int16(v1*v2))
-}
-
-func (cpu *CPU) Div(dest, src1, src2 string) {
-	v1 := cpu.GetRegister(src1)
-	v2 := cpu.GetRegister(src2)
-	cpu.SetRegister(dest, v1/v2)
-}
-
-func (cpu *CPU) Divu(dest, src1, src2 string) {
-	v1 := uint16(cpu.GetRegister(src1))
-	v2 := uint16(cpu.GetRegister(src2))
-	cpu.SetRegister(dest, int16(v1/v2))
-}
-
 func (cpu *CPU) Addi(dest, src string, value int16) {
 	v := cpu.GetRegister(src)
 	cpu.SetRegister(dest, v+value)
-}
-
-func (cpu *CPU) Subi(dest, src string, value int16) {
-	v := cpu.GetRegister(src)
-	cpu.SetRegister(dest, v-value)
-}
-
-func (cpu *CPU) Multi(dest, src string, value int16) {
-	v := cpu.GetRegister(src)
-	cpu.SetRegister(dest, v*value)
-}
-
-func (cpu *CPU) Multui(dest, src string, value uint16) {
-	v := uint16(cpu.GetRegister(src))
-	cpu.SetRegister(dest, int16(v*value))
-}
-
-func (cpu *CPU) Divi(dest, src string, value int16) {
-	v := cpu.GetRegister(src)
-	cpu.SetRegister(dest, v/value)
-}
-
-func (cpu *CPU) Divui(dest, src string, value uint16) {
-	v := uint16(cpu.GetRegister(src))
-	cpu.SetRegister(dest, int16(v/value))
 }
 
 func (cpu *CPU) Addu(dest, src1, src2 string) {
@@ -222,6 +167,17 @@ func (cpu *CPU) Addui(dest, src string, value uint16) {
 	cpu.SetRegister(dest, int16(result))
 }
 
+func (cpu *CPU) Sub(dest, src1, src2 string) {
+	v1 := cpu.GetRegister(src1)
+	v2 := cpu.GetRegister(src2)
+	cpu.SetRegister(dest, v1-v2)
+}
+
+func (cpu *CPU) Subi(dest, src string, value int16) {
+	v := cpu.GetRegister(src)
+	cpu.SetRegister(dest, v-value)
+}
+
 func (cpu *CPU) Subu(dest, src1, src2 string) {
 	v1 := uint16(cpu.GetRegister(src1))
 	v2 := uint16(cpu.GetRegister(src2))
@@ -232,6 +188,50 @@ func (cpu *CPU) Subui(dest, src string, value uint16) {
 	v := uint16(cpu.GetRegister(src))
 	result := v - uint16(value)
 	cpu.SetRegister(dest, int16(result))
+}
+
+func (cpu *CPU) Mult(dest, src1, src2 string) {
+	v1 := cpu.GetRegister(src1)
+	v2 := cpu.GetRegister(src2)
+	cpu.SetRegister(dest, v1*v2)
+}
+
+func (cpu *CPU) Multi(dest, src string, value int16) {
+	v := cpu.GetRegister(src)
+	cpu.SetRegister(dest, v*value)
+}
+
+func (cpu *CPU) Multu(dest, src1, src2 string) {
+	v1 := uint16(cpu.GetRegister(src1))
+	v2 := uint16(cpu.GetRegister(src2))
+	cpu.SetRegister(dest, int16(v1*v2))
+}
+
+func (cpu *CPU) Multui(dest, src string, value uint16) {
+	v := uint16(cpu.GetRegister(src))
+	cpu.SetRegister(dest, int16(v*value))
+}
+
+func (cpu *CPU) Div(dest, src1, src2 string) {
+	v1 := cpu.GetRegister(src1)
+	v2 := cpu.GetRegister(src2)
+	cpu.SetRegister(dest, v1/v2)
+}
+
+func (cpu *CPU) Divi(dest, src string, value int16) {
+	v := cpu.GetRegister(src)
+	cpu.SetRegister(dest, v/value)
+}
+
+func (cpu *CPU) Divu(dest, src1, src2 string) {
+	v1 := uint16(cpu.GetRegister(src1))
+	v2 := uint16(cpu.GetRegister(src2))
+	cpu.SetRegister(dest, int16(v1/v2))
+}
+
+func (cpu *CPU) Divui(dest, src string, value uint16) {
+	v := uint16(cpu.GetRegister(src))
+	cpu.SetRegister(dest, int16(v/value))
 }
 
 func (cpu *CPU) And(dest, src1, src2 string) {

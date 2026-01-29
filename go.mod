@@ -1,4 +1,4 @@
-module kokonoe
+module zprime
 
 go 1.25.4
 

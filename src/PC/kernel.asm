@@ -18,70 +18,70 @@
 
     j *_main
 
-# __KOKONOE_MOD(number, mod)
+# __ZPRIME_MOD(number, mod)
 #               sp+2,   sp
-__KOKONOE_MOD:
+__ZPRIME_MOD:
     lw $t0, 0($sp)          # t0 = mod
     lw $t1, 2($sp)          # t1 = number
 
     slt $t2, $t0, $zero     # t2 = mod < 0 (mod negativo)
     slt $t3, $t1, $zero     # t3 = num < 0 (valor negativo)
 
-    # if (number > 0) { __KOKONOE_MOD_VALUE_POSITIVE } else { __KOKONOE_MOD_VALUE_NEGATIVE }
-    bne $t3, $zero, *__KOKONOE_MOD_VALUE_NEGATIVE
-        __KOKONOE_MOD_VALUE_POSITIVE:
-            # if (mod > 0) { __KOKONOE_MOD_VALUE_POSITIVE_MOD_NEGATIVE } else { __KOKONOE_MOD_VALUE_POSITIVE_MOD_NEGATIVE }
-            bne $t2, $zero, *__KOKONOE_MOD_VALUE_POSITIVE_MOD_NEGATIVE
-                __KOKONOE_MOD_VALUE_POSITIVE_MOD_POSITIVE:
-                    __KOKONOE_MOD_VALUE_POSITIVE_MOD_POSITIVE_LOOP:     
+    # if (number > 0) { __ZPRIME_MOD_VALUE_POSITIVE } else { __ZPRIME_MOD_VALUE_NEGATIVE }
+    bne $t3, $zero, *__ZPRIME_MOD_VALUE_NEGATIVE
+        __ZPRIME_MOD_VALUE_POSITIVE:
+            # if (mod > 0) { __ZPRIME_MOD_VALUE_POSITIVE_MOD_NEGATIVE } else { __ZPRIME_MOD_VALUE_POSITIVE_MOD_NEGATIVE }
+            bne $t2, $zero, *__ZPRIME_MOD_VALUE_POSITIVE_MOD_NEGATIVE
+                __ZPRIME_MOD_VALUE_POSITIVE_MOD_POSITIVE:
+                    __ZPRIME_MOD_VALUE_POSITIVE_MOD_POSITIVE_LOOP:     
                         # if t1 < t0; { break } 
-                        blt $t1, $t0, *__KOKONOE_END_MOD
+                        blt $t1, $t0, *__ZPRIME_END_MOD
                         sub $t1, $t1, $t0   # t1 -= t0 
-                        j *__KOKONOE_MOD_VALUE_POSITIVE_MOD_POSITIVE_LOOP
+                        j *__ZPRIME_MOD_VALUE_POSITIVE_MOD_POSITIVE_LOOP
 
-                __KOKONOE_MOD_VALUE_POSITIVE_MOD_NEGATIVE:
-        __KOKONOE_MOD_VALUE_NEGATIVE:
-            # if (mod > 0) { __KOKONOE_MOD_VALUE_NEGATIVE_MOD_POSITIVE } else { __KOKONOE_MOD_VALUE_NEGATIVE_MOD_NEGATIVE }
-            bne $t2, $zero, *__KOKONOE_MOD_VALUE_NEGATIVE_MOD_NEGATIVE
-                __KOKONOE_MOD_VALUE_NEGATIVE_MOD_POSITIVE:
+                __ZPRIME_MOD_VALUE_POSITIVE_MOD_NEGATIVE:
+        __ZPRIME_MOD_VALUE_NEGATIVE:
+            # if (mod > 0) { __ZPRIME_MOD_VALUE_NEGATIVE_MOD_POSITIVE } else { __ZPRIME_MOD_VALUE_NEGATIVE_MOD_NEGATIVE }
+            bne $t2, $zero, *__ZPRIME_MOD_VALUE_NEGATIVE_MOD_NEGATIVE
+                __ZPRIME_MOD_VALUE_NEGATIVE_MOD_POSITIVE:
 
-                __KOKONOE_MOD_VALUE_NEGATIVE_MOD_NEGATIVE:
+                __ZPRIME_MOD_VALUE_NEGATIVE_MOD_NEGATIVE:
 
-    __KOKONOE_END_MOD:
+    __ZPRIME_END_MOD:
 
     move $rt, $t1
     return
 
 
-# __KOKONOE_MODU(number, mod)
+# __ZPRIME_MODU(number, mod)
 #               sp+2,   sp
-__KOKONOE_MODU:
+__ZPRIME_MODU:
     lw $t0, 0($sp)          # t0 = mod
     lw $t1, 2($sp)          # t1 = number
 
     slt $t2, $t0, $zero     # t2 = mod < 0 (mod negativo)
-    # if (mod > 0) { __KOKONOE_MODU_NEGATIVE_LOOP } else { __KOKONOE_MODU_POSITIVE_LOOP }
-    bne $t2, $zero, *__KOKONOE_MODU_NEGATIVE_LOOP
-        __KOKONOE_MODU_POSITIVE_LOOP:     
+    # if (mod > 0) { __ZPRIME_MODU_NEGATIVE_LOOP } else { __ZPRIME_MODU_POSITIVE_LOOP }
+    bne $t2, $zero, *__ZPRIME_MODU_NEGATIVE_LOOP
+        __ZPRIME_MODU_POSITIVE_LOOP:     
             sltu $t2, $t1, $t0 # t2 = t1 < t0
-            bgt $t2, $zero, *__KOKONOE_END_MODU # if ( t2 > 0 ) { __KOKONOE_END_MODU }
+            bgt $t2, $zero, *__ZPRIME_END_MODU # if ( t2 > 0 ) { __ZPRIME_END_MODU }
             sub $t1, $t1, $t0  # t1 -= t0 
-            j *__KOKONOE_MODU_POSITIVE_LOOP
-        __KOKONOE_MODU_NEGATIVE_LOOP:
+            j *__ZPRIME_MODU_POSITIVE_LOOP
+        __ZPRIME_MODU_NEGATIVE_LOOP:
             sltu $t2, $t1, $t0 # t2 = t1 < t0
-            bgt $t2, $zero, *__KOKONOE_END_MODU # if ( t2 > 0 ) { __KOKONOE_END_MODU }
+            bgt $t2, $zero, *__ZPRIME_END_MODU # if ( t2 > 0 ) { __ZPRIME_END_MODU }
             sub $t1, $t1, $t0  # t1 -= t0 
-            j *__KOKONOE_MODU_NEGATIVE_LOOP
+            j *__ZPRIME_MODU_NEGATIVE_LOOP
 
 
-    __KOKONOE_END_MODU:
+    __ZPRIME_END_MODU:
 
     move $rt, $t1
     return
 
-# __KOKONOE_PRINT_U16(number, column_vram, line_vram)
+# __ZPRIME_PRINT_U16(number, column_vram, line_vram)
 #                    sp+4    sp+2         sp
-__KOKONOE_PRINT_U16:
+__ZPRIME_PRINT_U16:
     # Calcula onde na VRAM deve começar a escrever
     lw $t1, 0($sp)      # t1 = line_vram
     addi $sp, $sp, 2    # pop line_vram
@@ -104,19 +104,19 @@ __KOKONOE_PRINT_U16:
     sw $zero, 0($sp)
 
     # while (t0 != 0)
-    __KOKONOE_WHILE_STACK_NUMBERS_U16:
+    __ZPRIME_WHILE_STACK_NUMBERS_U16:
         # push ra
         addi $sp, $sp, -2
         sw $ra, 0($sp)
         
-        # __KOKONOE_MODU(number, mod)
+        # __ZPRIME_MODU(number, mod)
         #               sp+2,   sp    
         addi $sp, $sp, -4   # cria 2 epaços na stack
         li $t1, 10
         sw $t1, 0($sp)      # push 10 (modulo)
         sw $t0, 2($sp)      # push number    
 
-        jal *__KOKONOE_MODU
+        jal *__ZPRIME_MODU
 
         lw $t0, 2($sp)
         addi $sp, $sp, 4    # pop values
@@ -141,29 +141,29 @@ __KOKONOE_PRINT_U16:
         sw $t1, 0($sp)
 
         # if t0 <= 0 { break }
-        ble $t0, $zero, *__KOKONOE_END_WHILE_STACK_NUMBERS_U16
+        ble $t0, $zero, *__ZPRIME_END_WHILE_STACK_NUMBERS_U16
 
-        j *__KOKONOE_WHILE_STACK_NUMBERS_U16
-    __KOKONOE_END_WHILE_STACK_NUMBERS_U16:
+        j *__ZPRIME_WHILE_STACK_NUMBERS_U16
+    __ZPRIME_END_WHILE_STACK_NUMBERS_U16:
 
-    __KOKONOE_UNSTACK_PRINT_NUMBERS:
+    __ZPRIME_UNSTACK_PRINT_NUMBERS:
         # pop
         lw $t0, 0($sp)
         addi $sp, $sp, 2
 
         # if (t0 == 0) { break }
-        beq $t0, $zero, *__KOKONOE_END_UNSTACK_PRINT_NUMBERS
+        beq $t0, $zero, *__ZPRIME_END_UNSTACK_PRINT_NUMBERS
 
         # print
         svr $t0, 0($t4)
         inc $t4
 
-        j *__KOKONOE_UNSTACK_PRINT_NUMBERS
-    __KOKONOE_END_UNSTACK_PRINT_NUMBERS:
+        j *__ZPRIME_UNSTACK_PRINT_NUMBERS
+    __ZPRIME_END_UNSTACK_PRINT_NUMBERS:
 
     return
 
-__KOKONOE_TEST_PRINT_U16:
+__ZPRIME_TEST_PRINT_U16:
     addi $sp, $sp, -2   # adiciona 1 espaço na stack
     sw $ra, 0($sp)      # push ra
 
@@ -178,7 +178,7 @@ __KOKONOE_TEST_PRINT_U16:
 
     # print_16(number, column_vram, line_vram)
     #          sp+4    sp+2         sp
-    jal *__KOKONOE_PRINT_U16
+    jal *__ZPRIME_PRINT_U16
     
     li $t0, 1
     sw $t0, 0($sp)
@@ -186,7 +186,7 @@ __KOKONOE_TEST_PRINT_U16:
     sw $t0, 2($sp)  
     li $t0, 32767
     sw $t0, 4($sp)
-    jal *__KOKONOE_PRINT_U16
+    jal *__ZPRIME_PRINT_U16
 
     li $t0, 2
     sw $t0, 0($sp)
@@ -194,7 +194,7 @@ __KOKONOE_TEST_PRINT_U16:
     sw $t0, 2($sp)
     li $t0, 32768
     sw $t0, 4($sp)
-    jal *__KOKONOE_PRINT_U16
+    jal *__ZPRIME_PRINT_U16
    
     li $t0, 3
     sw $t0, 0($sp)
@@ -202,7 +202,7 @@ __KOKONOE_TEST_PRINT_U16:
     sw $t0, 2($sp)
     li $t0, 65535
     sw $t0, 4($sp)
-    jal *__KOKONOE_PRINT_U16
+    jal *__ZPRIME_PRINT_U16
 
     addi $sp, $sp, 6 # pop values
  
@@ -212,7 +212,7 @@ __KOKONOE_TEST_PRINT_U16:
 
 
 _main:
-    jal *__KOKONOE_TEST_PRINT_U16
+    jal *__ZPRIME_TEST_PRINT_U16
     
     li $sc, 100 # render frame
     loop:

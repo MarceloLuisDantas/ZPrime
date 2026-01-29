@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	assembler "kokonoe/src/Assembler"
-	pc "kokonoe/src/PC"
 	"os"
 	"strings"
+	assembler "zprime/src/Assembler"
+	pc "zprime/src/PC"
 )
 
 func load_file(file_name string) string {
@@ -19,13 +19,13 @@ func load_file(file_name string) string {
 func main() {
 
 	if len(os.Args) < 3 {
-		fmt.Println("uso: kokonoe [as/run] file.[asm/krom]")
+		fmt.Println("uso: zprime [as/run] file.[asm/krom]")
 		os.Exit(0)
 	}
 
 	option := os.Args[1]
 	if option != "as" && option != "run" {
-		fmt.Println("uso: kokonoe [as/run] file.[asm/krom]")
+		fmt.Println("uso: zprime [as/run] file.[asm/krom]")
 		os.Exit(0)
 	}
 
