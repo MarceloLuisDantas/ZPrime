@@ -1,0 +1,181 @@
+180
+j
+96 
+li
+$t2 3600 
+li
+$t1 0 
+li
+$t0 0 
+beq
+$t0 $t2 16 
+svr
+$t1 0 $t0 
+inc
+$t0 
+j
+8 
+ret
+urn
+lb
+$t0 17 $zero 
+multi
+$t0 $t0 60 
+lb
+$t1 16 $zero 
+add
+$t0 $t0 $t1 
+li
+$t1 17 
+svr
+$t1 0 $t0 
+ret
+urn
+lb
+$t0 18 $zero 
+lb
+$t2 16 $zero 
+lb
+$t3 17 $zero 
+li
+$t1 0 
+bne
+$t0 $t1 50 
+ble
+$t3 $zero 90 
+dec
+$t3 
+sb
+$t3 17 $zero 
+ret
+urn
+li
+$t1 1 
+bne
+$t0 $t1 64 
+li
+$t1 59 
+bge
+$t2 $t1 90 
+inc
+$t2 
+sb
+$t2 16 $zero 
+ret
+urn
+li
+$t1 2 
+bne
+$t0 $t1 78 
+li
+$t1 59 
+bge
+$t3 $t1 90 
+inc
+$t3 
+sb
+$t3 17 $zero 
+ret
+urn
+li
+$t1 3 
+bne
+$t0 $t1 90 
+beq
+$t2 $zero 90 
+dec
+$t2 
+sb
+$t2 16 $zero 
+ret
+urn
+sb
+$zero 19 $zero 
+ret
+urn
+rand
+$t0 
+li
+$t0 5 
+sb
+$t0 16 $zero 
+li
+$t0 5 
+sb
+$t0 17 $zero 
+li
+$t0 1 
+sb
+$t0 18 $zero 
+li
+$t0 1 
+sb
+$t0 19 $zero 
+li
+$t0 1 
+sb
+$t0 20 $zero 
+li
+$t0 0 
+sb
+$t0 21 $zero 
+lb
+$t0 19 $zero 
+beq
+$t0 $zero 168 
+lb
+$t0 0 $zero 
+beq
+$t0 $zero 134 
+li
+$t0 0 
+sb
+$t0 18 $zero 
+j
+164 
+lb
+$t0 1 $zero 
+beq
+$t0 $zero 144 
+li
+$t0 2 
+sb
+$t0 18 $zero 
+j
+164 
+lb
+$t0 2 $zero 
+beq
+$t0 $zero 154 
+li
+$t0 3 
+sb
+$t0 18 $zero 
+j
+164 
+lb
+$t0 3 $zero 
+beq
+$t0 $zero 164 
+li
+$t0 1 
+sb
+$t0 18 $zero 
+j
+164 
+jal
+32 
+j
+170 
+j
+170 
+jal
+2 
+jal
+18 
+li
+$sc 100 
+sys
+call
+j
+120 
