@@ -1,4 +1,4 @@
-180
+222
 j
 96 
 li
@@ -119,56 +119,98 @@ li
 $t0 0 
 sb
 $t0 21 $zero 
+li
+$t0 0 
+sb
+$t0 22 $zero 
+li
+$t0 2 
+sb
+$t0 23 $zero 
 lb
 $t0 19 $zero 
 beq
-$t0 $zero 168 
+$t0 $zero 210 
+lb
+$t1 18 $zero 
 lb
 $t0 0 $zero 
 beq
-$t0 $zero 134 
+$t0 $zero 148 
+li
+$t2 2 
+beq
+$t1 $t2 148 
 li
 $t0 0 
 sb
 $t0 18 $zero 
 j
-164 
+190 
 lb
 $t0 1 $zero 
 beq
-$t0 $zero 144 
+$t0 $zero 162 
+li
+$t2 0 
+beq
+$t1 $t2 162 
 li
 $t0 2 
 sb
 $t0 18 $zero 
 j
-164 
+190 
 lb
 $t0 2 $zero 
 beq
-$t0 $zero 154 
+$t0 $zero 176 
+li
+$t2 1 
+beq
+$t1 $t2 176 
 li
 $t0 3 
 sb
 $t0 18 $zero 
 j
-164 
+190 
 lb
 $t0 3 $zero 
 beq
-$t0 $zero 164 
+$t0 $zero 190 
+li
+$t2 3 
+beq
+$t1 $t2 190 
 li
 $t0 1 
 sb
 $t0 18 $zero 
 j
-164 
+190 
+lb
+$t0 23 $zero 
+bne
+$t0 $zero 202 
+li
+$t0 2 
+sb
+$t0 23 $zero 
 jal
 32 
 j
-170 
+212 
+lb
+$t0 23 $zero 
+dec
+$t0 
+sb
+$t0 23 $zero 
 j
-170 
+212 
+j
+212 
 jal
 2 
 jal
@@ -178,4 +220,4 @@ $sc 100
 sys
 call
 j
-120 
+128 

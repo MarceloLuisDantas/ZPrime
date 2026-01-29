@@ -114,43 +114,75 @@ _main:
     # ram[21] = fruit
     li $t0, 0 # fruit don't exit
     sb $t0, 21($zero) 
+
+    # ram[22] = fruit position
+    li $t0, 0 
+    sb $t0, 22($zero) 
+
+    # ram[23] = wait frames
+    li $t0, 2
+    sb $t0, 23($zero) 
     
     game_loop:
         _start_logic:
             _startd_moviment_logic:
+
                 # if player_alive { move }
                 lb $t0, 19($zero)
                 beq $t0, $zero, *game_over
+                    lb $t1, 18($zero) # player poistion 
+                    
                     lb $t0, 0($zero) # key up
                     beq $t0, $zero, *else_set_up
-                        li $t0, 0
-                        sb $t0, 18($zero)
-                        j *go_move
+                        # if direction != down { set down }
+                        li $t2, 2
+                        beq $t1, $t2, *else_set_up
+                            li $t0, 0
+                            sb $t0, 18($zero)
+                            j *go_move
                     else_set_up:
 
                     lb $t0, 1($zero) # key down
                     beq $t0, $zero, *else_set_down
-                        li $t0, 2
-                        sb $t0, 18($zero)
-                        j *go_move
+                        # if direction != up { set down }
+                        li $t2, 0
+                        beq $t1, $t2, *else_set_down
+                            li $t0, 2
+                            sb $t0, 18($zero)
+                            j *go_move
                     else_set_down:
 
                     lb $t0, 2($zero) # key left
                     beq $t0, $zero, *else_set_left
-                        li $t0, 3
-                        sb $t0, 18($zero)
-                        j *go_move
+                        # if direction != right { set down }
+                        li $t2, 1
+                        beq $t1, $t2, *else_set_left
+                            li $t0, 3
+                            sb $t0, 18($zero)
+                            j *go_move
                     else_set_left:
 
                     lb $t0, 3($zero) # key right
                     beq $t0, $zero, *else_set_right
-                        li $t0, 1
-                        sb $t0, 18($zero)
-                        j *go_move
+                        # if direction != left { set down }
+                        li $t2, 3
+                        beq $t1, $t2, *else_set_right
+                            li $t0, 1
+                            sb $t0, 18($zero)
+                            j *go_move
                     else_set_right:
 
                     go_move:
-                        jal *_move
+                        lb $t0, 23($zero)
+                        bne $t0, $zero, *_waiting_frames
+                            li $t0, 2
+                            sb $t0, 23($zero)
+                            jal *_move
+                            j *_end_logic
+                        _waiting_frames:
+                            lb $t0, 23($zero)
+                            dec $t0
+                            sb $t0, 23($zero)
 
             _end_movimento_logic:
 
