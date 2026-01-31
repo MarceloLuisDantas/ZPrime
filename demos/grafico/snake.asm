@@ -17,7 +17,6 @@ _clear_scream:
 
     return
 
-
 _draw_player:
     lb $t0, 17($zero)  # t1 = player y
     # player y *= 60 | valor na vram conrespondente a linha
@@ -32,6 +31,16 @@ _draw_player:
 
     svr $t1, 0($t0) # draw player
 
+    return
+
+_drawn_fruit:
+    lw $t0, 22($zero) # fruit position
+    li $t1, 3         # [00000000][0000][0011] fundo vermelho
+
+    li $sc, 1004
+    syscall
+
+    svr $t1, 0($t0)
     return
 
 _move:
@@ -89,6 +98,25 @@ _move:
 
 _spawn_fuit:
     rand $t0 # random number 
+    
+    mod_loop:
+        # if t0 < 3600 { break }
+        sltui $t1, $t0, 3600 # t1 = t0 < 3600
+        bne $t1, $zero, *mod_end
+            subi $t0, $t0, 3600
+            j *mod_loop
+    mod_end:
+
+    # fruit position = t1
+    sw $t0, 22($zero)
+
+    # fruit = alive
+    li $t0, 1
+    sb $t0, 21($zero) 
+    return
+
+
+
 
 _main:
     # ram[16] = player x
@@ -115,13 +143,15 @@ _main:
     li $t0, 0 # fruit don't exit
     sb $t0, 21($zero) 
 
-    # ram[22] = fruit position
+    # ram[22][23] = fruit position
     li $t0, 0 
-    sb $t0, 22($zero) 
+    sw $t0, 22($zero) 
 
-    # ram[23] = wait frames
+    # ram[24] = wait frames
     li $t0, 2
-    sb $t0, 23($zero) 
+    sb $t0, 24($zero) 
+
+    # ram[25..535] = segments x and y
     
     game_loop:
         _start_logic:
@@ -173,30 +203,31 @@ _main:
                     else_set_right:
 
                     go_move:
-                        lb $t0, 23($zero)
+                        lb $t0, 24($zero)
                         bne $t0, $zero, *_waiting_frames
                             li $t0, 2
-                            sb $t0, 23($zero)
+                            sb $t0, 24($zero)
                             jal *_move
                             j *_end_logic
                         _waiting_frames:
-                            lb $t0, 23($zero)
+                            lb $t0, 24($zero)
                             dec $t0
-                            sb $t0, 23($zero)
+                            sb $t0, 24($zero)
 
             _end_movimento_logic:
 
-            # _start_spawn_fuit_logic:
-            #     # if fuit not exit { spawn_fuit }
-            #     lb $t0, 21($zero)
-            #     bne $t0, $zero, *_end_spawn_fuit_logic
-            #         jal *_spawn_fuit
-            #         inc $t0
-            #         sb $t0, 21($zero)
-            # _end_spawn_fuit_logic:
+            
+
+            _start_spawn_fuit_logic:
+                # if fuit_exit == 0 { spawn_fuit }
+                lb $t0, 21($zero)
+                bne $t0, $zero, *_end_spawn_fuit_logic
+                    jal *_spawn_fuit
+                    inc $t0
+                    sb $t0, 21($zero)
+            _end_spawn_fuit_logic:
 
 
-                j *_end_logic
 
             game_over:
                 j *_end_logic
@@ -206,6 +237,7 @@ _main:
 
         _start_drawing:
             jal *_clear_scream
+            jal *_drawn_fruit
             jal *_draw_player
 
             # render frame
