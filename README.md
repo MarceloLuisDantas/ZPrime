@@ -22,4 +22,4 @@ Para prova da capacidade do sistema para a criação de jogos imples, uma reprod
 ./KPrime run demos/graficos/snake.krom
 ```
 
-[demo](demo.png)
+![demo](demo.png)
