@@ -16,10 +16,6 @@ Toda a memoria é implementada em arquitetura multi ship, com RAM, VRAM e ROM te
 ZPrime possui um display ASCII 60x60, com capacidade para 8 cores em texto e background.
 
 ## DEMO
-Para prova da capacidade do sistema para a criação de jogos imples, uma reprodução do jogo Snake foi feita.
-
-```
-./KPrime run demos/graficos/snake.krom
-```
+Para prova da capacidade do sistema para a criação de jogos imples, uma reprodução do jogo Snake foi feita: `./KPrime run demos/graficos/snake.krom`. A demo possui bugs, porem são bugs no codigo Assembly da demo, e não pela implementação da VM.
 
 ![demo](demo.png)
