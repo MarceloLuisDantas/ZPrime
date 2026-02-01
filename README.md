@@ -15,5 +15,11 @@ Toda a memoria é implementada em arquitetura multi ship, com RAM, VRAM e ROM te
 ### Display
 ZPrime possui um display ASCII 60x60, com capacidade para 8 cores em texto e background.
 
-## Aprenda
-Todas as instruções estão documentadas em [Documentação](./Documentação.md)
+## DEMO
+Para prova da capacidade do sistema para a criação de jogos imples, uma reprodução do jogo Snake foi feita.
+
+```
+./KPrime run demos/graficos/snake.krom
+```
+
+[demo](demo.png)

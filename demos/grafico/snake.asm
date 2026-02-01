@@ -18,7 +18,7 @@ _clear_scream:
     return
 
 _draw_border:
-    li $t5, 5 # [00000000][0000][0101] '║' fonte cinza fundo preto
+    li $t5, 5 # [00000000][0000][0101] fundo cinza
     li $t0, 0 # border.y = 0
     li $t1, 60 # last pixel first line
     loop_draw_border:
@@ -210,12 +210,10 @@ _spawn_fuit:
                 j *mod_loop_in_vram
         end_mod_loop_in_vram:
 
-        # check if the position is valid
         lvr $t1, 0($t0)
         bne $t1, $zero, *try_to_spawn
     spawn:
 
-    # fruit position = t1
     sw $t0, 22($zero)
 
     # fruit = alive
@@ -268,8 +266,15 @@ _main:
 
     # ram[25..535] = segments x and y (255)
     li $t0, 255
-        
+    
+    
     game_loop:
+        # li $sc, 1003
+        # lw $t0, 22($zero) # fruit.x
+        # syscall
+    
+
+
         _start_logic:
             _startd_moviment_logic:
 

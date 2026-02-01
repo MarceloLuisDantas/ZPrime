@@ -407,7 +407,6 @@ func (cpu *CPU) Srl(dest, src string, value uint16) {
 func (cpu *CPU) Sb(src string, offset int16, reg_index string) {
 	value := uint8(cpu.GetRegister(src))
 	index := int32(cpu.GetRegister(reg_index)) + int32(offset)
-
 	cpu.ram.save_byte(value, uint16(index))
 }
 
@@ -824,7 +823,7 @@ func (cpu *CPU) ReadInput() {
 }
 
 func (cpu *CPU) Run() {
-	rl.InitWindow(SCREAM_W*SCALING, SCREAM_H*SCALING, "Teste raylib")
+	rl.InitWindow(SCREAM_W*SCALING, SCREAM_H*SCALING, "ZPrime")
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(60)
@@ -842,8 +841,4 @@ func (cpu *CPU) Run() {
 			return
 		}
 	}
-}
-
-func (cpu *CPU) ShowStack() {
-
 }
