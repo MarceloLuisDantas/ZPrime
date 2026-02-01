@@ -17,33 +17,102 @@ _clear_scream:
 
     return
 
+_draw_border:
+    li $t5, 5 # [00000000][0000][0101] '║' fonte cinza fundo preto
+    li $t0, 0 # border.y = 0
+    li $t1, 60 # last pixel first line
+    loop_draw_border:
+        beq $t0, $t1, *end_draw_border
+            svr $t5, 0($t0) 
+            multi $t0, $t0, 60
+            svr $t5, 0($t0) 
+            addi $t0, $t0, 59
+            svr $t5, 0($t0) 
+            subi $t0, $t0, 59
+            divi $t0, $t0, 60
+            addi $t0, $t0, 3540
+            svr $t5, 0($t0) 
+            subi $t0, $t0, 3540
+            inc $t0
+            j *loop_draw_border
+    end_draw_border:
+    return
+
 _draw_player:
-    lb $t0, 17($zero)  # t1 = player y
-    # player y *= 60 | valor na vram conrespondente a linha
-    multi $t0, $t0, 60 
-    
-    lb $t1, 16($zero)  # t0 = player x
-    # t0 = linha + coluna | valor na vram a [y][x] 
-    add $t0, $t0, $t1 
+    # 17 = [00000000][0000][0001] fundo branco
+    li $t4, 1
 
-    # 17 = [00000000][0001][0001] sem character, fonte branca, fundo branco
-    li $t1, 17 
+    li $t2, 25        # t2 = first segment index
+    lb $t3, 20($zero) # t3 = player lenght
 
-    svr $t1, 0($t0) # draw player
+    _draw_segments:
+        # if len == 0 { break }
+        beq $t3, $zero, *_end_draw_segments    
+            lb $t0, 1($t2) # t0 = segment.y
+            # li $sc, 1004
+            # syscall
+
+            # player y *= 60 | valor na vram conrespondente a linha
+            multi $t0, $t0, 60 
+            lb $t1, 0($t2) # t1 = segment.x
+            # t0 = linha + coluna | valor na vram a [y][x] 
+            add $t0, $t0, $t1 
+            svr $t4, 0($t0) # draw segment
+            dec $t3 # lenght -= 1
+            addi $t2, $t2, 2
+            j *_draw_segments
+    _end_draw_segments:
+
+    # 17 = [00000000][0000][0100] fundo verde
+    li $t4, 4
+
+    _draw_head:
+        lb $t0, 17($zero)  # t0 = head.y
+        # player y *= 60 | valor na vram conrespondente a linha
+        multi $t0, $t0, 60 
+        lb $t1, 16($zero)  # t1 = head.x
+        # t0 = linha + coluna | valor na vram a [y][x] 
+        add $t0, $t0, $t1 
+        svr $t4, 0($t0) # draw player
+    _end_draw_head:
 
     return
 
-_drawn_fruit:
+_draw_fruit:
     lw $t0, 22($zero) # fruit position
     li $t1, 3         # [00000000][0000][0011] fundo vermelho
-
-    li $sc, 1004
-    syscall
 
     svr $t1, 0($t0)
     return
 
 _move:
+    _move_segments:
+        lb $t0, 16($zero) # t0 = player.x
+        lb $t1, 17($zero) # t1 = player.y
+        lb $t4, 20($zero) # t4 = len
+        li $t5, 25 # first segment position
+
+        loop_move_segments:
+            # if len == 0 { break }
+            beq $t4, $zero, *end_move_segments
+
+            # save the x and y of the current segment in t2 and t0
+            lb $t2, 0($t5) # t2 = *(t5)
+            lb $t3, 1($t5) # t3 = *(t5+1)          
+
+            # set current segment x and y to the last segment x and y                        
+            sb $t0, 0($t5) # current_segment.x = prev_seg.x
+            sb $t1, 1($t5) # current_segment.y = prev_seg.y
+
+            addi $t5, $t5, 2 # set pivot to the next segment
+            dec $t4          # len -= 1
+
+            move $t0, $t2 
+            move $t1, $t3
+            j *loop_move_segments
+        end_move_segments:
+    _end_move_segments:
+    
     lb $t0, 18($zero) # t0 = direction
     lb $t2, 16($zero) # t2 = x
     lb $t3, 17($zero) # t3 = y
@@ -51,8 +120,9 @@ _move:
     # if player.direction == up { }
     li $t1, 0
     bne $t0, $t1, *else_up
-        # if $t0 > 0 { player.y -= 1 }
-        ble $t3, $zero, *set_dead
+        # if $t0 > 1 { player.y -= 1 }
+        li $t1, 1
+        ble $t3, $t1, *set_dead
             # player y -= 1
             dec $t3           
             sb $t3, 17($zero) 
@@ -62,8 +132,8 @@ _move:
     # if player.direction == right { }
     li $t1, 1
     bne $t0, $t1, *else_right
-        # if player.x < 59 { player.x += 1 }
-        li $t1, 59
+        # if player.x < 58 { player.x += 1 }
+        li $t1, 58
         bge $t2, $t1, *set_dead
             # player x += 1
             inc $t2           
@@ -74,7 +144,7 @@ _move:
     # if player.direction == down { }
     li $t1, 2
     bne $t0, $t1, *else_down
-        li $t1, 59
+        li $t1, 58
         bge $t3, $t1, *set_dead
             inc $t3           # player y += 1
             sb $t3, 17($zero) # salve player y
@@ -85,7 +155,8 @@ _move:
     li $t1, 3
     bne $t0, $t1, *else_left
         # if player.x > 0 { player.x -= 1 }
-        beq $t2, $zero, *set_dead
+        li $t1, 1
+        beq $t2, $t1, *set_dead
             # player x -= 1
             dec $t2           
             sb $t2, 16($zero)
@@ -115,8 +186,15 @@ _spawn_fuit:
     sb $t0, 21($zero) 
     return
 
-
-
+_new_segment:
+    lb $t0, 20($zero)    # t0 = lenght    
+    li $t1, 25           # first segment on ram
+    li $t2, 2            # size of each segment
+    mult $t2, $t2, $t0   # size * lenght,  
+    add $t1, $t1, $t2    # new segment position
+    sb $zero, 0($t1) # new_segment.x = 0
+    sb $zero, 1($t1) # new_segment.y = 0
+    return
 
 _main:
     # ram[16] = player x
@@ -136,7 +214,7 @@ _main:
     sb $t0, 19($zero)
 
     # ram[20] = player length
-    li $t0, 1 # player length
+    li $t0, 0 # player length
     sb $t0, 20($zero)
 
     # ram[21] = fruit
@@ -151,7 +229,9 @@ _main:
     li $t0, 2
     sb $t0, 24($zero) 
 
-    # ram[25..535] = segments x and y
+    # ram[25..535] = segments x and y (255)
+    li $t0, 255
+    
     
     game_loop:
         _start_logic:
@@ -216,7 +296,26 @@ _main:
 
             _end_movimento_logic:
 
-            
+            _start_fruit_colision:
+                lb $t0, 17($zero)  # t0 = player.y                
+                multi $t0, $t0, 60 # line in the vram
+                lb $t1, 16($zero)  # t1 = player.x
+                add $t0, $t0, $t1  # t0 = player position in the vram
+                lw $t1, 22($zero)  # t1 = fruit position
+                # if fruit.position == player.position { }
+                bne $t0, $t1, *_end_fruit_colision
+                    lb $t0, 20($zero) # t0 = player.lenght
+                    inc $t0           # t0 += 1
+                    li $t1, 255       # t1 = 255 (max lenght)
+                    # if player.lenght == 255 { win }
+                    bne $t0, $t1, *not_win
+                        sb $zero, 19($zero) # player win
+                        j *game_over
+                    not_win:
+                        sb $t0, 20($zero) # player.lenght = t0
+                        sb $zero, 21($zero) # despawn fruit
+                        jal *_new_segment
+            _end_fruit_colision:
 
             _start_spawn_fuit_logic:
                 # if fuit_exit == 0 { spawn_fuit }
@@ -227,8 +326,6 @@ _main:
                     sb $t0, 21($zero)
             _end_spawn_fuit_logic:
 
-
-
             game_over:
                 j *_end_logic
                     
@@ -237,8 +334,9 @@ _main:
 
         _start_drawing:
             jal *_clear_scream
-            jal *_drawn_fruit
+            jal *_draw_fruit
             jal *_draw_player
+            jal *_draw_border
 
             # render frame
             li $sc, 100

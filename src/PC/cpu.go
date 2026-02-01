@@ -407,6 +407,7 @@ func (cpu *CPU) Srl(dest, src string, value uint16) {
 func (cpu *CPU) Sb(src string, offset int16, reg_index string) {
 	value := uint8(cpu.GetRegister(src))
 	index := int32(cpu.GetRegister(reg_index)) + int32(offset)
+
 	cpu.ram.save_byte(value, uint16(index))
 }
 
