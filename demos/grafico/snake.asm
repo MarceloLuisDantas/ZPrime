@@ -49,8 +49,6 @@ _draw_player:
         # if len == 0 { break }
         beq $t3, $zero, *_end_draw_segments    
             lb $t0, 1($t2) # t0 = segment.y
-            # li $sc, 1004
-            # syscall
 
             # player y *= 60 | valor na vram conrespondente a linha
             multi $t0, $t0, 60 
@@ -75,6 +73,40 @@ _draw_player:
         add $t0, $t0, $t1 
         svr $t4, 0($t0) # draw player
     _end_draw_head:
+
+    return
+
+_draw_game_over:
+    la $t5, *game_over_text_1
+    li $t1, 183 # game_over position
+    li $t2, 23  # len
+    li $t3, 11  # lines
+
+    loop_draw_game_over:
+        beq $t3, $zero, *end_draw_game_over
+            loop_draw_game_over_line:
+                beq $t2, $zero, *end_draw_game_over_line
+                    lrb $t0, 0($t5)
+                    li $t4, 32
+                    beq $t0, $t4, *draw_space
+                        li $t0, 2 # fundo azul
+                        j *draw_game_over_char
+                    draw_space:
+                        li $t0, 0 # tudo preto                   
+                    draw_game_over_char:
+                        svr $t0, 0($t1)
+                    inc $t5
+                    inc $t1
+                    dec $t2
+                    j *loop_draw_game_over_line
+            end_draw_game_over_line:
+
+            li $t2, 23
+            subi $t1, $t1, 23 # back start
+            addi $t1, $t1, 60 # next line
+            dec $t3
+            j *loop_draw_game_over
+    end_draw_game_over:
 
     return
 
@@ -168,15 +200,20 @@ _move:
         return
 
 _spawn_fuit:
-    rand $t0 # random number 
-    
-    mod_loop:
-        # if t0 < 3600 { break }
-        sltui $t1, $t0, 3600 # t1 = t0 < 3600
-        bne $t1, $zero, *mod_end
-            subi $t0, $t0, 3600
-            j *mod_loop
-    mod_end:
+    try_to_spawn:
+        rand $t0 # random number 
+        mod_loop_in_vram:
+            # if t0 < 3600 { break }
+            sltui $t1, $t0, 3600 # t1 = t0 < 3600
+            bne $t1, $zero, *end_mod_loop_in_vram
+                subi $t0, $t0, 3600
+                j *mod_loop_in_vram
+        end_mod_loop_in_vram:
+
+        # check if the position is valid
+        lvr $t1, 0($t0)
+        bne $t1, $zero, *try_to_spawn
+    spawn:
 
     # fruit position = t1
     sw $t0, 22($zero)
@@ -187,13 +224,13 @@ _spawn_fuit:
     return
 
 _new_segment:
-    lb $t0, 20($zero)    # t0 = lenght    
-    li $t1, 25           # first segment on ram
-    li $t2, 2            # size of each segment
-    mult $t2, $t2, $t0   # size * lenght,  
-    add $t1, $t1, $t2    # new segment position
-    sb $zero, 0($t1) # new_segment.x = 0
-    sb $zero, 1($t1) # new_segment.y = 0
+    lb $t0, 20($zero)  # t0 = lenght    
+    li $t1, 25         # first segment on ram
+    li $t2, 2          # size of each segment
+    mult $t2, $t2, $t0 # size * lenght,  
+    add $t1, $t1, $t2  # new segment position
+    sb $zero, 0($t1)   # new_segment.x = 0
+    sb $zero, 1($t1)   # new_segment.y = 0
     return
 
 _main:
@@ -231,8 +268,7 @@ _main:
 
     # ram[25..535] = segments x and y (255)
     li $t0, 255
-    
-    
+        
     game_loop:
         _start_logic:
             _startd_moviment_logic:
@@ -338,6 +374,11 @@ _main:
             jal *_draw_player
             jal *_draw_border
 
+            lb $t0, 19($zero)
+            bne $t0, $zero, *not_game_over
+                jal *_draw_game_over
+            not_game_over:
+
             # render frame
             li $sc, 100
             syscall
@@ -348,3 +389,5 @@ _main:
 
 
 .data
+    game_over_text_1: .string "■■■■■ ■■■■■ ■■■■■ ■■■■■■     ■   ■ ■ ■ ■ ■    ■   ■ ■■■■■ ■ ■ ■ ■■■  ■   ■ ■   ■ ■   ■ ■    ■■■■■ ■   ■ ■   ■ ■■■■■                       ■■■■■ ■   ■ ■■■■■ ■■■■ ■   ■ ■   ■ ■     ■   ■■   ■ ■   ■ ■■■   ■■■■ ■   ■  ■ ■  ■     ■   ■■■■■■   ■   ■■■■■ ■   ■"
+
