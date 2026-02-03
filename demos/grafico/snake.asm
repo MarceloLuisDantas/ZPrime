@@ -76,6 +76,46 @@ _draw_player:
 
     return
 
+_draw_start_menu:
+    la $t5, *press_start
+    li $t1, 1643 # linha 30 coluna 23
+    li $t2, 14   # lenght
+
+    loop_draw_start_menu:
+        beq $t2, $zero, *end_draw_start_menu
+            lrb $t0, 0($t5)
+            sll $t0, $t0, 8  # [xxxxxxxx][00000000]
+            ori $t0, $t0, 32 # [xxxxxxxx][0010][0000] fonte azul e fundo preto
+            svr $t0, 0($t1)
+            inc $t5
+            inc $t1
+            dec $t2
+            
+            j *loop_draw_start_menu
+    end_draw_start_menu:
+
+    return
+
+_draw_pause_menu:
+    la $t5, *resume_game
+    li $t1, 1643 # linha 30 coluna 23
+    li $t2, 14   # lenght
+
+    loop_draw_pause_menu:
+        beq $t2, $zero, *end_draw_pause_menu
+            lrb $t0, 0($t5)
+            sll $t0, $t0, 8  # [xxxxxxxx][00000000]
+            ori $t0, $t0, 32 # [xxxxxxxx][0010][0000] fonte azul e fundo preto
+            svr $t0, 0($t1)
+            inc $t5
+            inc $t1
+            dec $t2
+            
+            j *loop_draw_pause_menu
+    end_draw_pause_menu:
+
+    return
+
 _draw_game_over:
     la $t5, *game_over_text_1
     li $t1, 183 # game_over position
@@ -90,11 +130,9 @@ _draw_game_over:
                     li $t4, 32
                     beq $t0, $t4, *draw_space
                         li $t0, 2 # fundo azul
-                        j *draw_game_over_char
+                        svr $t0, 0($t1)    
                     draw_space:
-                        li $t0, 0 # tudo preto                   
-                    draw_game_over_char:
-                        svr $t0, 0($t1)
+                    
                     inc $t5
                     inc $t1
                     dec $t2
@@ -202,24 +240,17 @@ _move:
 _spawn_fuit:
     try_to_spawn:
         rand $t0 # random number 
-        mod_loop_in_vram:
-            # if t0 < 3600 { break }
-            sltui $t1, $t0, 3600 # t1 = t0 < 3600
-            bne $t1, $zero, *end_mod_loop_in_vram
-                subi $t0, $t0, 3600
-                j *mod_loop_in_vram
-        end_mod_loop_in_vram:
+        move $t1, $t0 # t1 = t0
+
+        divui $t1, $t1, 3600 
+        multi $t1, $t1, 3600 
+        sub $t0, $t0, $t1 
 
         lvr $t1, 0($t0)
         bne $t1, $zero, *try_to_spawn
     spawn:
-
-    sw $t0, 22($zero)
-
-    # fruit = alive
-    li $t0, 1
-    sb $t0, 21($zero) 
-    return
+        sw $t0, 22($zero)
+        return
 
 _new_segment:
     lb $t0, 20($zero)  # t0 = lenght    
@@ -232,167 +263,258 @@ _new_segment:
     return
 
 _main:
-    # ram[16] = player x
-    li $t0, 5 # player x
-    sb $t0, 16($zero) 
+    jal *_draw_border
+    _start_over:
+        # ram[16] = player x
+        li $t0, 5 # player x
+        sb $t0, 16($zero) 
 
-    # ram[17] = player y
-    li $t0, 5 # player y
-    sb $t0, 17($zero) 
+        # ram[17] = player y
+        li $t0, 5 # player y
+        sb $t0, 17($zero) 
 
-    # ram[18] = player direction
-    li $t0, 1 # player direction
-    sb $t0, 18($zero)
+        # ram[18] = player direction
+        li $t0, 1 # player direction
+        sb $t0, 18($zero)
 
-    # ram[19] = player alive
-    li $t0, 1 # player alive
-    sb $t0, 19($zero)
+        # ram[19] = player alive
+        li $t0, 1 # player alive
+        sb $t0, 19($zero)
 
-    # ram[20] = player length
-    li $t0, 0 # player length
-    sb $t0, 20($zero)
+        # ram[20] = player length
+        li $t0, 0 # player length
+        sb $t0, 20($zero)
 
-    # ram[21] = fruit
-    li $t0, 0 # fruit don't exit
-    sb $t0, 21($zero) 
+        # ram[21] = fruit
+        li $t0, 0 # fruit don't exit
+        sb $t0, 21($zero) 
 
-    # ram[22][23] = fruit position
-    li $t0, 0 
-    sw $t0, 22($zero) 
+        # ram[22][23] = fruit position
+        li $t0, 0 
+        sw $t0, 22($zero) 
 
-    # ram[24] = wait frames
-    li $t0, 2
-    sb $t0, 24($zero) 
+        # ram[24] = wait frames
+        li $t0, 2
+        sb $t0, 24($zero) 
 
-    # ram[25..535] = segments x and y (255)
-    li $t0, 255
+        # ram[25..535] = segments x and y (255)
+        li $t0, 255
+
+        # ram[536] = game state
+        # 0 = running
+        # 1 = start menu
+        # 2 = pause menu
+        li $t0, 1
+        sb $t0, 536($zero)
+
+        # ram[537] = pause/resume dalay
+        li $t0, 15
+        sb $t0, 537($zero)
     
-    
-    game_loop:
-        # li $sc, 1003
-        # lw $t0, 22($zero) # fruit.x
-        # syscall
-    
+        game_loop:
+            _start_logic:
+                lb $t0, 536($zero) # game state
+                li $t1, 0 # game running
+                beq $t0, $t1, *_game_running_logic
+                
+                li $t1, 1 # start menu
+                beq $t0, $t1, *_start_menu_logic
 
+                li $t1, 2 # start menu
+                beq $t0, $t1, *_pause_menu_logic
+                    _game_running_logic:
+                        _start_moviment_logic:
+                            # if player_alive { move }
+                            lb $t0, 19($zero)
+                            beq $t0, $zero, *game_over
+                                lb $t1, 18($zero) # player poistion 
+                                
+                                lb $t0, 0($zero) # key up
+                                beq $t0, $zero, *else_set_up
+                                    # if direction != down { set down }
+                                    li $t2, 2
+                                    beq $t1, $t2, *else_set_up
+                                        li $t0, 0
+                                        sb $t0, 18($zero)
+                                        j *go_move
+                                else_set_up:
 
-        _start_logic:
-            _startd_moviment_logic:
+                                lb $t0, 1($zero) # key down
+                                beq $t0, $zero, *else_set_down
+                                    # if direction != up { set down }
+                                    li $t2, 0
+                                    beq $t1, $t2, *else_set_down
+                                        li $t0, 2
+                                        sb $t0, 18($zero)
+                                        j *go_move
+                                else_set_down:
 
-                # if player_alive { move }
-                lb $t0, 19($zero)
-                beq $t0, $zero, *game_over
-                    lb $t1, 18($zero) # player poistion 
-                    
-                    lb $t0, 0($zero) # key up
-                    beq $t0, $zero, *else_set_up
-                        # if direction != down { set down }
-                        li $t2, 2
-                        beq $t1, $t2, *else_set_up
-                            li $t0, 0
-                            sb $t0, 18($zero)
-                            j *go_move
-                    else_set_up:
+                                lb $t0, 2($zero) # key left
+                                beq $t0, $zero, *else_set_left
+                                    # if direction != right { set down }
+                                    li $t2, 1
+                                    beq $t1, $t2, *else_set_left
+                                        li $t0, 3
+                                        sb $t0, 18($zero)
+                                        j *go_move
+                                else_set_left:
 
-                    lb $t0, 1($zero) # key down
-                    beq $t0, $zero, *else_set_down
-                        # if direction != up { set down }
-                        li $t2, 0
-                        beq $t1, $t2, *else_set_down
-                            li $t0, 2
-                            sb $t0, 18($zero)
-                            j *go_move
-                    else_set_down:
+                                lb $t0, 3($zero) # key right
+                                beq $t0, $zero, *else_set_right
+                                    # if direction != left { set down }
+                                    li $t2, 3
+                                    beq $t1, $t2, *else_set_right
+                                        li $t0, 1
+                                        sb $t0, 18($zero)
+                                        j *go_move
+                                else_set_right:
 
-                    lb $t0, 2($zero) # key left
-                    beq $t0, $zero, *else_set_left
-                        # if direction != right { set down }
-                        li $t2, 1
-                        beq $t1, $t2, *else_set_left
-                            li $t0, 3
-                            sb $t0, 18($zero)
-                            j *go_move
-                    else_set_left:
+                                go_move:
+                                    lb $t0, 24($zero)
+                                    bne $t0, $zero, *_waiting_frames
+                                        li $t0, 2
+                                        sb $t0, 24($zero)
+                                        jal *_move
+                                        j *_end_logic
+                                    _waiting_frames:
+                                        lb $t0, 24($zero)
+                                        dec $t0
+                                        sb $t0, 24($zero)
+                        _end_moviment_logic:
 
-                    lb $t0, 3($zero) # key right
-                    beq $t0, $zero, *else_set_right
-                        # if direction != left { set down }
-                        li $t2, 3
-                        beq $t1, $t2, *else_set_right
-                            li $t0, 1
-                            sb $t0, 18($zero)
-                            j *go_move
-                    else_set_right:
+                        _check_pause_game:
+                            lb $t0, 537($zero)
+                            beq $t0, $zero, *no_decrement_on_game_running
+                                dec $t0
+                            no_decrement_on_game_running:
+                            sb $t0, 537($zero)
 
-                    go_move:
-                        lb $t0, 24($zero)
-                        bne $t0, $zero, *_waiting_frames
-                            li $t0, 2
-                            sb $t0, 24($zero)
-                            jal *_move
+                            lb $t0, 5($zero) # key enter
+                            beq $t0, $zero, *no_pause
+                                lb $t0, 537($zero)
+                                bne $t0, $zero, *_end_pause_menu_logic
+                                    li $t0, 2 # game state pause
+                                    sb $t0, 536($zero)
+                                    li $t0, 15
+                                    sb $t0, 537($zero)
+                                    j *_end_logic
+                            no_pause:
+
+                        _start_fruit_colision:
+                            lb $t0, 17($zero)  # t0 = player.y                
+                            multi $t0, $t0, 60 # line in the vram
+                            lb $t1, 16($zero)  # t1 = player.x
+                            add $t0, $t0, $t1  # t0 = player position in the vram
+                            lw $t1, 22($zero)  # t1 = fruit position
+                            # if fruit.position == player.position { }
+                            bne $t0, $t1, *_end_fruit_colision
+                                lb $t0, 20($zero) # t0 = player.lenght
+                                inc $t0           # t0 += 1
+                                li $t1, 255       # t1 = 255 (max lenght)
+                                # if player.lenght == 255 { win }
+                                bne $t0, $t1, *not_win
+                                    sb $zero, 19($zero) # player win
+                                    j *game_over
+                                not_win:
+                                    sb $t0, 20($zero) # player.lenght = t0
+                                    sb $zero, 21($zero) # despawn fruit
+                                    jal *_new_segment
+                        _end_fruit_colision:
+
+                        _start_spawn_fuit_logic:
+                            # if fuit_exit == 0 { spawn_fuit }
+                            lb $t0, 21($zero)
+                            bne $t0, $zero, *_end_spawn_fuit_logic
+                                jal *_spawn_fuit
+                        _end_spawn_fuit_logic:
+                        
+                        j *_end_logic
+
+                        game_over:
+                            lb $t0, 5($zero) # key enter
+                            beq $t0, $zero, *no_restart
+                                j *_start_over
+                            no_restart:
+                                j *_end_logic                        
+
+                    _end_game_running_logic:
+
+                    _start_menu_logic:
+                        lb $t0, 5($zero) # key enter
+                        beq $t0, $zero, *no_start
+                            li $t0, 0 # game state running
+                            sb $t0, 536($zero)
+                        no_start:
                             j *_end_logic
-                        _waiting_frames:
-                            lb $t0, 24($zero)
+                    _end_start_menu_logic:
+
+                    _pause_menu_logic:
+                        lb $t0, 537($zero)
+                        beq $t0, $zero, *no_decrement_pause_menu
                             dec $t0
-                            sb $t0, 24($zero)
+                        no_decrement_pause_menu:
+                        sb $t0, 537($zero)
 
-            _end_movimento_logic:
+                        lb $t0, 5($zero) # key enter
+                        beq $t0, $zero, *_end_pause_menu_logic
+                            lb $t0, 537($zero)
+                            bne $t0, $zero, *_end_pause_menu_logic
+                                li $t0, 0 # game state running
+                                sb $t0, 536($zero)
+                                li $t0, 15
+                                sb $t0, 537($zero)
+                                j *_end_logic
+                        
+                    _end_pause_menu_logic:
 
-            _start_fruit_colision:
-                lb $t0, 17($zero)  # t0 = player.y                
-                multi $t0, $t0, 60 # line in the vram
-                lb $t1, 16($zero)  # t1 = player.x
-                add $t0, $t0, $t1  # t0 = player position in the vram
-                lw $t1, 22($zero)  # t1 = fruit position
-                # if fruit.position == player.position { }
-                bne $t0, $t1, *_end_fruit_colision
-                    lb $t0, 20($zero) # t0 = player.lenght
-                    inc $t0           # t0 += 1
-                    li $t1, 255       # t1 = 255 (max lenght)
-                    # if player.lenght == 255 { win }
-                    bne $t0, $t1, *not_win
-                        sb $zero, 19($zero) # player win
-                        j *game_over
-                    not_win:
-                        sb $t0, 20($zero) # player.lenght = t0
-                        sb $zero, 21($zero) # despawn fruit
-                        jal *_new_segment
-            _end_fruit_colision:
+            _end_logic:
 
-            _start_spawn_fuit_logic:
-                # if fuit_exit == 0 { spawn_fuit }
-                lb $t0, 21($zero)
-                bne $t0, $zero, *_end_spawn_fuit_logic
-                    jal *_spawn_fuit
-                    inc $t0
-                    sb $t0, 21($zero)
-            _end_spawn_fuit_logic:
+            _start_drawing:
+                jal *_clear_scream
+                jal *_draw_fruit
+                jal *_draw_player
+                jal *_draw_border
 
-            game_over:
-                j *_end_logic
-                    
-            
-        _end_logic:
+                lb $t0, 536($zero) # game state
+                # li $sc, 1003
+                # syscall
 
-        _start_drawing:
-            jal *_clear_scream
-            jal *_draw_fruit
-            jal *_draw_player
-            jal *_draw_border
+                li $t1, 0 # game running
+                beq $t0, $t1, *_game_runing
 
-            lb $t0, 19($zero)
-            bne $t0, $zero, *not_game_over
-                jal *_draw_game_over
-            not_game_over:
+                li $t1, 1 # start menu
+                beq $t0, $t1, *_start_menu
+                
+                li $t1, 2 # game pause
+                beq $t0, $t1, *_game_pause
+                
+                _game_runing:
+                    lb $t0, 19($zero)
+                    bne $t0, $zero, *not_game_over
+                        jal *_draw_game_over
+                    not_game_over:
+                    j *_render
 
-            # render frame
-            li $sc, 100
-            syscall
-        _end_drawing:
+                _start_menu:
+                    jal *_draw_start_menu
+                    j *_render
+                
+                _game_pause:
+                    jal *_draw_pause_menu
+                    j *_render
 
-        j *game_loop
+                _render:
+                    # render frame
+                    li $sc, 100
+                    syscall
+            _end_drawing:
+
+            j *game_loop
     
 
 
 .data
+    press_start: .string "[PRESS START!]"
+    resume_game: .string "[RESUME GAME!]"
     game_over_text_1: .string "■■■■■ ■■■■■ ■■■■■ ■■■■■■     ■   ■ ■ ■ ■ ■    ■   ■ ■■■■■ ■ ■ ■ ■■■  ■   ■ ■   ■ ■   ■ ■    ■■■■■ ■   ■ ■   ■ ■■■■■                       ■■■■■ ■   ■ ■■■■■ ■■■■ ■   ■ ■   ■ ■     ■   ■■   ■ ■   ■ ■■■   ■■■■ ■   ■  ■ ■  ■     ■   ■■■■■■   ■   ■■■■■ ■   ■"
 
