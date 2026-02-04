@@ -1,0 +1,297 @@
+296
+j
+284 
+li
+$t2 3600 
+li
+$t1 0 
+li
+$t0 0 
+beq
+$t0 $t2 16 
+svr
+$t1 0 $t0 
+inc
+$t0 
+j
+8 
+ret
+urn
+li
+$t0 32 
+li
+$t1 1154 
+li
+$t5 1 
+svr
+$t5 0 $t1 
+svr
+$t5 840 $t1 
+inc
+$t1 
+dec
+$t0 
+bne
+$t0 $zero 24 
+li
+$t0 15 
+li
+$t1 1153 
+svr
+$t5 0 $t1 
+svr
+$t5 32 $t1 
+addi
+$t1 $t1 60 
+dec
+$t0 
+bne
+$t0 $zero 38 
+ret
+urn
+li
+$t5 5 
+li
+$t0 1340 
+lb
+$t1 0 $zero 
+lb
+$t2 7 $zero 
+or
+$t1 $t1 $t2 
+beq
+$t1 $zero 64 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 59 $t0 
+svr
+$t5 60 $t0 
+svr
+$t5 61 $t0 
+li
+$t5 5 
+li
+$t0 1760 
+lb
+$t1 1 $zero 
+lb
+$t2 9 $zero 
+or
+$t1 $t1 $t2 
+beq
+$t1 $zero 86 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 -1 $t0 
+svr
+$t5 1 $t0 
+svr
+$t5 60 $t0 
+li
+$t5 5 
+li
+$t0 1517 
+lb
+$t1 2 $zero 
+lb
+$t2 8 $zero 
+or
+$t1 $t1 $t2 
+beq
+$t1 $zero 108 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 60 $t0 
+svr
+$t5 59 $t0 
+svr
+$t5 120 $t0 
+li
+$t5 5 
+li
+$t0 1523 
+lb
+$t1 3 $zero 
+lb
+$t2 10 $zero 
+or
+$t1 $t1 $t2 
+beq
+$t1 $zero 130 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 60 $t0 
+svr
+$t5 61 $t0 
+svr
+$t5 120 $t0 
+li
+$t5 5 
+li
+$t0 1467 
+lb
+$t1 6 $zero 
+beq
+$t1 $zero 148 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 1 $t0 
+li
+$t5 5 
+li
+$t0 1470 
+lb
+$t1 5 $zero 
+beq
+$t1 $zero 162 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 1 $t0 
+li
+$t5 5 
+li
+$t0 1715 
+lb
+$t1 13 $zero 
+beq
+$t1 $zero 176 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 60 $t0 
+svr
+$t5 61 $t0 
+svr
+$t5 59 $t0 
+svr
+$t5 120 $t0 
+li
+$t5 5 
+li
+$t0 1538 
+lb
+$t1 14 $zero 
+beq
+$t1 $zero 196 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 60 $t0 
+svr
+$t5 61 $t0 
+svr
+$t5 59 $t0 
+svr
+$t5 120 $t0 
+li
+$t5 5 
+li
+$t0 1361 
+lb
+$t1 15 $zero 
+beq
+$t1 $zero 216 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 60 $t0 
+svr
+$t5 61 $t0 
+svr
+$t5 59 $t0 
+svr
+$t5 120 $t0 
+li
+$t5 5 
+li
+$t0 1648 
+lb
+$t1 4 $zero 
+beq
+$t1 $zero 236 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 1 $t0 
+svr
+$t5 2 $t0 
+li
+$t5 3 
+li
+$t0 1096 
+lb
+$t1 11 $zero 
+beq
+$t1 $zero 252 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 1 $t0 
+svr
+$t5 2 $t0 
+svr
+$t5 3 $t0 
+svr
+$t5 4 $t0 
+li
+$t5 3 
+li
+$t0 1119 
+lb
+$t1 12 $zero 
+beq
+$t1 $zero 272 
+li
+$t5 4 
+svr
+$t5 0 $t0 
+svr
+$t5 1 $t0 
+svr
+$t5 2 $t0 
+svr
+$t5 3 $t0 
+svr
+$t5 4 $t0 
+ret
+urn
+jal
+2 
+jal
+18 
+jal
+50 
+li
+$sc 100 
+sys
+call
+j
+284 
