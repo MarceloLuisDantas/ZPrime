@@ -751,74 +751,100 @@ func (cpu *CPU) CarryNextInstruction() {
 func (cpu *CPU) ReadInput() {
 	if rl.IsKeyDown(rl.KeyUp) {
 		cpu.ram.ram[0] = 1
-	} else if rl.IsKeyDown(rl.KeyDown) {
+	}
+	if rl.IsKeyDown(rl.KeyDown) {
 		cpu.ram.ram[1] = 1
-	} else if rl.IsKeyDown(rl.KeyLeft) {
+	}
+	if rl.IsKeyDown(rl.KeyLeft) {
 		cpu.ram.ram[2] = 1
-	} else if rl.IsKeyDown(rl.KeyRight) {
+	}
+	if rl.IsKeyDown(rl.KeyRight) {
 		cpu.ram.ram[3] = 1
-	} else if rl.IsKeyDown(rl.KeySpace) {
+	}
+	if rl.IsKeyDown(rl.KeySpace) {
 		cpu.ram.ram[4] = 1
-	} else if rl.IsKeyDown(rl.KeyEnter) {
+	}
+	if rl.IsKeyDown(rl.KeyEnter) {
 		cpu.ram.ram[5] = 1
-	} else if rl.IsKeyDown(rl.KeyBackspace) {
+	}
+	if rl.IsKeyDown(rl.KeyBackspace) {
 		cpu.ram.ram[6] = 1
-	} else if rl.IsKeyDown(rl.KeyW) {
+	}
+	if rl.IsKeyDown(rl.KeyW) {
 		cpu.ram.ram[7] = 1
-	} else if rl.IsKeyDown(rl.KeyA) {
+	}
+	if rl.IsKeyDown(rl.KeyA) {
 		cpu.ram.ram[8] = 1
-	} else if rl.IsKeyDown(rl.KeyS) {
+	}
+	if rl.IsKeyDown(rl.KeyS) {
 		cpu.ram.ram[9] = 1
-	} else if rl.IsKeyDown(rl.KeyS) {
+	}
+	if rl.IsKeyDown(rl.KeyD) {
 		cpu.ram.ram[10] = 1
-	} else if rl.IsKeyDown(rl.KeyD) {
+	}
+	if rl.IsKeyDown(rl.KeyQ) {
 		cpu.ram.ram[11] = 1
-	} else if rl.IsKeyDown(rl.KeyQ) {
+	}
+	if rl.IsKeyDown(rl.KeyE) {
 		cpu.ram.ram[12] = 1
-	} else if rl.IsKeyDown(rl.KeyE) {
+	}
+	if rl.IsKeyDown(rl.KeyI) {
 		cpu.ram.ram[13] = 1
-	} else if rl.IsKeyDown(rl.KeyI) {
+	}
+	if rl.IsKeyDown(rl.KeyO) {
 		cpu.ram.ram[14] = 1
-	} else if rl.IsKeyDown(rl.KeyO) {
+	}
+	if rl.IsKeyDown(rl.KeyP) {
 		cpu.ram.ram[15] = 1
-	} else if rl.IsKeyDown(rl.KeyP) {
-		cpu.ram.ram[16] = 1
 	}
 
 	if rl.IsKeyReleased(rl.KeyUp) {
 		cpu.ram.ram[0] = 0
-	} else if rl.IsKeyReleased(rl.KeyDown) {
+	}
+	if rl.IsKeyReleased(rl.KeyDown) {
 		cpu.ram.ram[1] = 0
-	} else if rl.IsKeyReleased(rl.KeyLeft) {
+	}
+	if rl.IsKeyReleased(rl.KeyLeft) {
 		cpu.ram.ram[2] = 0
-	} else if rl.IsKeyReleased(rl.KeyRight) {
+	}
+	if rl.IsKeyReleased(rl.KeyRight) {
 		cpu.ram.ram[3] = 0
-	} else if rl.IsKeyReleased(rl.KeySpace) {
+	}
+	if rl.IsKeyReleased(rl.KeySpace) {
 		cpu.ram.ram[4] = 0
-	} else if rl.IsKeyReleased(rl.KeyEnter) {
+	}
+	if rl.IsKeyReleased(rl.KeyEnter) {
 		cpu.ram.ram[5] = 0
-	} else if rl.IsKeyReleased(rl.KeyBackspace) {
+	}
+	if rl.IsKeyReleased(rl.KeyBackspace) {
 		cpu.ram.ram[6] = 0
-	} else if rl.IsKeyReleased(rl.KeyW) {
+	}
+	if rl.IsKeyReleased(rl.KeyW) {
 		cpu.ram.ram[7] = 0
-	} else if rl.IsKeyReleased(rl.KeyA) {
+	}
+	if rl.IsKeyReleased(rl.KeyA) {
 		cpu.ram.ram[8] = 0
-	} else if rl.IsKeyReleased(rl.KeyS) {
+	}
+	if rl.IsKeyReleased(rl.KeyS) {
 		cpu.ram.ram[9] = 0
-	} else if rl.IsKeyReleased(rl.KeyS) {
+	}
+	if rl.IsKeyReleased(rl.KeyD) {
 		cpu.ram.ram[10] = 0
-	} else if rl.IsKeyReleased(rl.KeyD) {
+	}
+	if rl.IsKeyReleased(rl.KeyQ) {
 		cpu.ram.ram[11] = 0
-	} else if rl.IsKeyReleased(rl.KeyQ) {
+	}
+	if rl.IsKeyReleased(rl.KeyE) {
 		cpu.ram.ram[12] = 0
-	} else if rl.IsKeyReleased(rl.KeyE) {
+	}
+	if rl.IsKeyReleased(rl.KeyI) {
 		cpu.ram.ram[13] = 0
-	} else if rl.IsKeyReleased(rl.KeyI) {
+	}
+	if rl.IsKeyReleased(rl.KeyO) {
 		cpu.ram.ram[14] = 0
-	} else if rl.IsKeyReleased(rl.KeyO) {
+	}
+	if rl.IsKeyReleased(rl.KeyP) {
 		cpu.ram.ram[15] = 0
-	} else if rl.IsKeyReleased(rl.KeyP) {
-		cpu.ram.ram[16] = 0
 	}
 }
 
