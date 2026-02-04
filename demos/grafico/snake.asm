@@ -186,6 +186,10 @@ _move:
     lb $t0, 18($zero) # t0 = direction
     lb $t2, 16($zero) # t2 = x
     lb $t3, 17($zero) # t3 = y
+    
+    li $t5, 60 # t5 = position
+    mult $t5, $t5, $t3
+    add $t5, $t5, $t2
 
     # if player.direction == up { }
     li $t1, 0
@@ -193,6 +197,10 @@ _move:
         # if $t0 > 1 { player.y -= 1 }
         li $t1, 1
         ble $t3, $t1, *set_dead
+            li $t1, 1 # fundo branco (corpo da minhoca)
+            lvr $t0, -60($t5) # pixel a cima
+            # detecta morte por contato proprio
+            beq $t0, $t1, *set_dead 
             # player y -= 1
             dec $t3           
             sb $t3, 17($zero) 
@@ -205,6 +213,10 @@ _move:
         # if player.x < 58 { player.x += 1 }
         li $t1, 58
         bge $t2, $t1, *set_dead
+            li $t1, 1 # fundo branco (corpo da minhoca)
+            lvr $t0, 1($t5) # pixel a direta
+            # detecta morte por contato proprio
+            beq $t0, $t1, *set_dead 
             # player x += 1
             inc $t2           
             sb $t2, 16($zero) 
@@ -216,6 +228,10 @@ _move:
     bne $t0, $t1, *else_down
         li $t1, 58
         bge $t3, $t1, *set_dead
+            li $t1, 1 # fundo branco (corpo da minhoca)
+            lvr $t0, 60($t5) # pixel a baixo
+            # detecta morte por contato proprio
+            beq $t0, $t1, *set_dead 
             inc $t3           # player y += 1
             sb $t3, 17($zero) # salve player y
             return
@@ -227,6 +243,11 @@ _move:
         # if player.x > 0 { player.x -= 1 }
         li $t1, 1
         beq $t2, $t1, *set_dead
+            li $t1, 1 # fundo branco (corpo da minhoca)
+            lvr $t0, -1($t5) # pixel a esquerda
+            # detecta morte por contato proprio
+            beq $t0, $t1, *set_dead 
+
             # player x -= 1
             dec $t2           
             sb $t2, 16($zero)
