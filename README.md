@@ -19,10 +19,10 @@ ZPrime possui um display ASCII 60x60, com capacidade para 8 cores em texto e bac
 ## Build
 Para buildar e testar o projeto basta rodar:
 ```bash
-go build -o ZPrime main.go
+go build -o ZPrime 
 ./ZPrime run demos/graficos/snake.krom
 ```
-Se for sua primeira vez compilando o projeto, a compilação sera lenta, pois o projeto utiliza Raylib, que precisa ser baixado e compilado. As compilações seguintes serão mais rápidas.
+Se for sua primeira vez compilando o projeto, a compilação sera lenta, pois o projeto utiliza Raylib, que precisa ser baixado e compilado. As compilações seguintes serão mais rápidas. 
 
 ## DEMO
 ### Snake
