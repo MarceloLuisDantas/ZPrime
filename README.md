@@ -16,6 +16,14 @@ Toda a memória é implementada em uma arquitetura multi-chip, com RAM, VRAM e R
 ### Display
 ZPrime possui um display ASCII 60x60, com capacidade para 8 cores em texto e background.
 
+## Build
+Para buildar e testar o projeto basta rodar:
+```bash
+go build -o ZPrime main.go
+./ZPrime run demos/graficos/snake.krom
+```
+Se for sua primeira vez compilando o projeto, a compilação sera lenta, pois o projeto utiliza Raylib, que precisa ser baixado e compilado. As compilações seguintes serão mais rápidas.
+
 ## DEMO
 ### Snake
 Para prova da capacidade do sistema para a criação de jogos imples, uma reprodução do jogo Snake foi feita: `./KPrime run demos/graficos/snake.krom`. A demo possui bugs, porem são bugs no codigo Assembly da demo, e não pela implementação da VM.
