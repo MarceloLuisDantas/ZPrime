@@ -31,7 +31,7 @@ Para prova da capacidade do sistema para a criação de jogos imples, uma reprod
 ![demo](demo.png)
 
 ### Visualizador de Input
-ZPrime possui 12 entradas WASD/Setas, Enter, BackSpace, Space, Q, E, I, O e P. Para demonstrar uma demo para visualizar os inputs em tempo real esta dispoivel com `./KPrime run demos/graficos/input_view.krom`
+ZPrime possui 12 entradas WASD/Setas, Enter, BackSpace, Space, Q, E, I, O e P. Para demonstrar uma demo para visualizar os inputs em tempo real esta dispoivel com `./ZPrime run demos/graficos/input_view.krom`
 
 ![demo2](demo2.png)
 
