@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -32,24 +33,26 @@ var cores = map[COLOR]color.RGBA{
 }
 
 type CPU struct {
-	zero int16
-	t0   int16
-	t1   int16
-	t2   int16
-	t3   int16
-	t4   int16
-	t5   int16
-	rt   int16
-	sc   int16
-	sp   uint16
-	fp   uint16
-	ra   uint16
-	pc   uint16
-	gp   uint16
-	ir   string
-	rom  *ROM
-	ram  *RAM
-	vram *VRAM
+	zero            int16
+	t0              int16
+	t1              int16
+	t2              int16
+	t3              int16
+	t4              int16
+	t5              int16
+	rt              int16
+	sc              int16
+	sp              uint16
+	fp              uint16
+	ra              uint16
+	pc              uint16
+	gp              uint16
+	ir              string
+	rom             *ROM
+	ram             *RAM
+	vram            *VRAM
+	last_frame_time time.Time
+	frame_interval  time.Duration
 }
 
 func NewCPU(file []string) (*CPU, error) {
@@ -72,6 +75,9 @@ func NewCPU(file []string) (*CPU, error) {
 
 	cpu.sp = 65535
 	cpu.fp = 65535
+
+	cpu.last_frame_time = time.Now()
+	cpu.frame_interval = 17 * time.Millisecond
 	return &cpu, nil
 }
 
@@ -465,11 +471,11 @@ func (cpu *CPU) RenderFrame() {
 }
 
 // 0 - exit
-// 1 - print t0 como int8
-// 2 - print t0 como utin8
-// 3 - print t0 como int16
-// 4 - print t0 como uint16
-// 5 - print t0 como char utf8
+// 1 - print t0 como int8 - não utilize
+// 2 - print t0 como utin8 - não utilize
+// 3 - print t0 como int16 - não utilize
+// 4 - print t0 como uint16 - não utilize
+// 5 - print t0 como char utf8 - não utilize
 // 100 - render frame
 func (cpu *CPU) Syscall() {
 	value := cpu.t0
@@ -488,7 +494,10 @@ func (cpu *CPU) Syscall() {
 		fmt.Printf("%c", int8(value))
 
 	case 100:
-		cpu.RenderFrame()
+		if time.Since(cpu.last_frame_time) >= cpu.frame_interval {
+			cpu.RenderFrame()
+			cpu.last_frame_time = time.Now()
+		}
 
 	case 1001:
 		println(int8(value))
@@ -851,8 +860,6 @@ func (cpu *CPU) ReadInput() {
 func (cpu *CPU) Run() {
 	rl.InitWindow(SCREAM_W*SCALING, SCREAM_H*SCALING, "ZPrime")
 	defer rl.CloseWindow()
-
-	rl.SetTargetFPS(60)
 
 	for !rl.WindowShouldClose() {
 		cpu.ReadInput()
