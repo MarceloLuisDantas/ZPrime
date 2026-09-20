@@ -51,6 +51,7 @@ type CPU struct {
 	rom             *ROM
 	ram             *RAM
 	vram            *VRAM
+	memory_card     *MemoryCard
 	last_frame_time time.Time
 	frame_interval  time.Duration
 }
@@ -72,6 +73,7 @@ func NewCPU(file []string) (*CPU, error) {
 
 	cpu.ram = NewRam()
 	cpu.vram = NewVram()
+	cpu.memory_card = NewMemoryCard()
 
 	cpu.sp = 65535
 	cpu.fp = 65535
@@ -79,6 +81,10 @@ func NewCPU(file []string) (*CPU, error) {
 	cpu.last_frame_time = time.Now()
 	cpu.frame_interval = 17 * time.Millisecond
 	return &cpu, nil
+}
+
+func (cpu *CPU) LoadSave(saves []byte) {
+	cpu.memory_card.Load(saves)
 }
 
 func (cpu *CPU) SetRegister(dest string, value int16) {
