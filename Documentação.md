@@ -120,4 +120,24 @@ Os registradores de RAM de 0x0000 a 0x000F representam teclas:
 - 0x000E: KEY O
 - 0x000F: KEY P
 
+# Preprocessador
+Antes de ser convertido em ROM, o codigo passa pelo preprocessador, que substitui os nomes criados com `#define` pelos seus valores.
+
+```
+#define HP 2($zero) # endereço na memoria para onde o HP esta guardado
+#define CURA 10
+
+.text
+    lb $t0, HP          # lb $t0, 2($zero)
+    addi $t0, $t0, CURA # addi $t0, $t0, 10
+    sb $t0, HP          # sb $t0, 2($zero)
+```
+
+- `#define NOME valor` — O valor é todo o resto da linha, sem o comentario
+- O nome pode ter letras, numeros e `_`, não pode começar com numero e nem ser o nome de uma instrução
+- Um nome precisa ser definido antes de ser usado, e não pode ser definido duas vezes
+- Um `#define` pode usar nomes definidos antes dele: `#define B A`
+- `#define` pode ser usado antes do `.text`
+- Nomes não são substituidos dentro de strings e comentarios, nem em labels: `HP:` e `*HP` continuam se referindo ao label `HP`
+
 

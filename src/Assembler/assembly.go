@@ -108,8 +108,15 @@ func exportFile(instructions []Instruction, file_name string, gp int) error {
 
 func Assembler(data, file_name string) {
 
+	data, err := newPreprocessor(data).Process()
+	if err != nil {
+		println("Erro ao preprocessar: ", err.Error())
+		return
+	}
+	println("Preprocessor: OK")
+
 	tk := newTokenizer(data)
-	err := tk.Tokenize()
+	err = tk.Tokenize()
 	if err != nil {
 		println("Erro ao tokenizar: ", err.Error())
 		return

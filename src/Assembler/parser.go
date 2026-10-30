@@ -675,7 +675,17 @@ func (parser *Parser) Parse() ([]Instruction, int) {
 		return nil, -1
 	}
 
-	if (currentToken.TokenType != SECTION) && (currentToken.Value != ".text") {
+	// Linhas de #define e comentários antes do .text viram linhas em branco
+	for currentToken.TokenType == NEW_LINE {
+		parser.Position += 1
+		currentToken, err = parser.getCurrentToken()
+		if err != nil {
+			println(err.Error())
+			return nil, -1
+		}
+	}
+
+	if (currentToken.TokenType != SECTION) || (currentToken.Value != ".text") {
 		println("Seção de text deve ser devinida no começo do arquivo")
 		return nil, -1
 	}

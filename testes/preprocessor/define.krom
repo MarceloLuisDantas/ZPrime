@@ -1,0 +1,21 @@
+20
+li
+$t0 10 
+sb
+$t0 16 $zero 
+lb
+$t0 16 $zero 
+addi
+$t0 $t0 20 
+sb
+$t0 16 $zero 
+li
+$sc 1003 
+lb
+$t0 16 $zero 
+sys
+call
+li
+$sc 0 
+sys
+call
