@@ -1,6 +1,6 @@
-640
+814
 j
-350 
+506 
 li
 $t2 3600 
 li
@@ -142,7 +142,7 @@ j
 ret
 urn
 la
-$t5 28 
+$t5 45 
 li
 $t1 183 
 li
@@ -349,6 +349,164 @@ sb
 $zero 1 $t1 
 ret
 urn
+divui
+$t2 $t0 10 
+multui
+$t4 $t2 10 
+subu
+$t4 $t0 $t4 
+addi
+$t4 $t4 48 
+sll
+$t4 $t4 8 
+ori
+$t4 $t4 16 
+svr
+$t4 0 $t1 
+dec
+$t1 
+move
+$t0 $t2 
+bne
+$t0 $zero 350 
+ret
+urn
+addi
+$sp $sp -2 
+sw
+$ra 0 $sp 
+la
+$t5 34 
+li
+$t1 985 
+lrb
+$t0 0 $t5 
+beq
+$t0 $zero 396 
+sll
+$t0 $t0 8 
+ori
+$t0 $t0 32 
+svr
+$t0 0 $t1 
+inc
+$t5 
+inc
+$t1 
+j
+380 
+li
+$t5 0 
+addi
+$t3 $t5 18 
+multi
+$t3 $t3 60 
+addi
+$t0 $t5 1 
+addi
+$t1 $t3 26 
+jal
+350 
+li
+$t0 46 
+sll
+$t0 $t0 8 
+ori
+$t0 $t0 16 
+svr
+$t0 27 $t3 
+lb
+$t0 540 $t5 
+addi
+$t1 $t3 32 
+jal
+350 
+inc
+$t5 
+li
+$t0 10 
+bne
+$t5 $t0 398 
+lw
+$ra 0 $sp 
+addi
+$sp $sp 2 
+ret
+urn
+request_save
+28 
+move
+$t5 $rt 
+sb
+$t5 538 $zero 
+li
+$t1 0 
+li
+$t2 10 
+addi
+$t4 $t1 0 
+read_save
+$t5 $t4 
+sb
+$rt 540 $t1 
+inc
+$t1 
+bne
+$t1 $t2 444 
+ret
+urn
+lb
+$t0 20 $zero 
+li
+$t1 0 
+li
+$t2 10 
+beq
+$t1 $t2 504 
+lb
+$t3 540 $t1 
+bgt
+$t0 $t3 472 
+inc
+$t1 
+j
+462 
+li
+$t2 9 
+beq
+$t2 $t1 486 
+subi
+$t4 $t2 1 
+lb
+$t3 540 $t4 
+sb
+$t3 540 $t2 
+dec
+$t2 
+j
+474 
+sb
+$t0 540 $t1 
+lb
+$t5 538 $zero 
+li
+$t1 0 
+li
+$t2 10 
+addi
+$t4 $t1 0 
+lb
+$t3 540 $t1 
+write_save
+$t5 $t4 $t3 
+inc
+$t1 
+bne
+$t1 $t2 494 
+ret
+urn
+jal
+434 
 jal
 18 
 li
@@ -393,86 +551,88 @@ li
 $t0 15 
 sb
 $t0 537 $zero 
+sb
+$zero 539 $zero 
 lb
 $t0 536 $zero 
 li
 $t1 0 
 beq
-$t0 $t1 408 
+$t0 $t1 568 
 li
 $t1 1 
 beq
-$t0 $t1 560 
+$t0 $t1 732 
 li
 $t1 2 
 beq
-$t0 $t1 570 
+$t0 $t1 742 
 lb
 $t0 19 $zero 
 beq
-$t0 $zero 552 
+$t0 $zero 714 
 lb
 $t1 18 $zero 
 lb
 $t0 0 $zero 
 beq
-$t0 $zero 428 
+$t0 $zero 588 
 li
 $t2 2 
 beq
-$t1 $t2 428 
+$t1 $t2 588 
 li
 $t0 0 
 sb
 $t0 18 $zero 
 j
-470 
+630 
 lb
 $t0 1 $zero 
 beq
-$t0 $zero 442 
+$t0 $zero 602 
 li
 $t2 0 
 beq
-$t1 $t2 442 
+$t1 $t2 602 
 li
 $t0 2 
 sb
 $t0 18 $zero 
 j
-470 
+630 
 lb
 $t0 2 $zero 
 beq
-$t0 $zero 456 
+$t0 $zero 616 
 li
 $t2 1 
 beq
-$t1 $t2 456 
+$t1 $t2 616 
 li
 $t0 3 
 sb
 $t0 18 $zero 
 j
-470 
+630 
 lb
 $t0 3 $zero 
 beq
-$t0 $zero 470 
+$t0 $zero 630 
 li
 $t2 3 
 beq
-$t1 $t2 470 
+$t1 $t2 630 
 li
 $t0 1 
 sb
 $t0 18 $zero 
 j
-470 
+630 
 lb
 $t0 24 $zero 
 bne
-$t0 $zero 482 
+$t0 $zero 642 
 li
 $t0 2 
 sb
@@ -480,7 +640,7 @@ $t0 24 $zero
 jal
 192 
 j
-596 
+768 
 lb
 $t0 24 $zero 
 dec
@@ -490,7 +650,7 @@ $t0 24 $zero
 lb
 $t0 537 $zero 
 beq
-$t0 $zero 494 
+$t0 $zero 654 
 dec
 $t0 
 sb
@@ -498,11 +658,11 @@ $t0 537 $zero
 lb
 $t0 5 $zero 
 beq
-$t0 $zero 514 
+$t0 $zero 674 
 lb
 $t0 537 $zero 
 bne
-$t0 $zero 596 
+$t0 $zero 768 
 li
 $t0 2 
 sb
@@ -512,7 +672,7 @@ $t0 15
 sb
 $t0 537 $zero 
 j
-596 
+768 
 lb
 $t0 17 $zero 
 multi
@@ -524,7 +684,7 @@ $t0 $t0 $t1
 lw
 $t1 22 $zero 
 bne
-$t0 $t1 544 
+$t0 $t1 706 
 lb
 $t0 20 $zero 
 inc
@@ -532,11 +692,13 @@ $t0
 li
 $t1 255 
 bne
-$t0 $t1 538 
+$t0 $t1 700 
+sb
+$t0 20 $zero 
 sb
 $zero 19 $zero 
 j
-552 
+714 
 sb
 $t0 20 $zero 
 sb
@@ -546,33 +708,43 @@ jal
 lb
 $t0 21 $zero 
 bne
-$t0 $zero 550 
+$t0 $zero 712 
 jal
 316 
 j
-596 
+768 
+lb
+$t0 539 $zero 
+bne
+$t0 $zero 724 
+jal
+456 
+li
+$t0 1 
+sb
+$t0 539 $zero 
 lb
 $t0 5 $zero 
 beq
-$t0 $zero 558 
+$t0 $zero 730 
 j
-352 
+510 
 j
-596 
+768 
 lb
 $t0 5 $zero 
 beq
-$t0 $zero 568 
+$t0 $zero 740 
 li
 $t0 0 
 sb
 $t0 536 $zero 
 j
-596 
+768 
 lb
 $t0 537 $zero 
 beq
-$t0 $zero 576 
+$t0 $zero 748 
 dec
 $t0 
 sb
@@ -580,11 +752,11 @@ $t0 537 $zero
 lb
 $t0 5 $zero 
 beq
-$t0 $zero 596 
+$t0 $zero 768 
 lb
 $t0 537 $zero 
 bne
-$t0 $zero 596 
+$t0 $zero 768 
 li
 $t0 0 
 sb
@@ -594,7 +766,7 @@ $t0 15
 sb
 $t0 537 $zero 
 j
-596 
+768 
 jal
 2 
 jal
@@ -608,37 +780,39 @@ $t0 536 $zero
 li
 $t1 0 
 beq
-$t0 $t1 618 
+$t0 $t1 790 
 li
 $t1 1 
 beq
-$t0 $t1 626 
+$t0 $t1 800 
 li
 $t1 2 
 beq
-$t0 $t1 630 
+$t0 $t1 804 
 lb
 $t0 19 $zero 
 bne
-$t0 $zero 624 
+$t0 $zero 798 
 jal
 142 
+jal
+372 
 j
-634 
+808 
 jal
 90 
 j
-634 
+808 
 jal
 116 
 j
-634 
+808 
 li
 $sc 100 
 sys
 call
 j
-394 
+554 
 91
 80
 82
@@ -667,6 +841,23 @@ j
 69
 33
 93
+115
+110
+97
+107
+101
+0
+72
+73
+71
+72
+83
+67
+79
+82
+69
+83
+0
 9632
 9632
 9632
