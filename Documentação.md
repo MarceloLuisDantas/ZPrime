@@ -101,6 +101,11 @@
 - `lrb dest, offset, point` — Carrega byte da ROM para dest
 - `lrw dest, offset, point` — Carrega word da ROM para dest
 
+## Memory Card
+- `request_save *label` — Retorna em `$rt` o save do programa, cujo id é a string em `label`
+- `read_save save_id, address` — Retorna em `$rt` o byte no endereço `address` do save
+- `write_save save_id, address, value` — Escreve o byte menos significativo de `value` no endereço `address` do save
+
 ## Entrada (Teclado)
 Os registradores de RAM de 0x0000 a 0x000F representam teclas:
 - 0x0000: KEY UP
@@ -140,4 +145,44 @@ Antes de ser convertido em ROM, o codigo passa pelo preprocessador, que substitu
 - `#define` pode ser usado antes do `.text`
 - Nomes não são substituidos dentro de strings e comentarios, nem em labels: `HP:` e `*HP` continuam se referindo ao label `HP`
 
+# Memory Card
+O memory card é um arquivo de 512 KiB dividido em 32 saves de 16 KiB. O save 0 é reservado para o sistema de arquivos, e os saves 1 a 31 ficam disponiveis para os programas, 1 save por programa.
 
+```
+#define CONTADOR 100 # endereço do contador no save
+
+.text
+    request_save *program_name # rt = save_id
+    move $t1, $rt              # t1 = save_id
+
+    li $t0, CONTADOR
+    read_save $t1, $t0         # rt = contador
+    inc $rt                    # contador++
+    write_save $t1, $t0, $rt   # atualiza o contador no save
+
+.data
+    program_name: .string "contador\0"
+```
+
+- O id do programa é uma string de 1 a 16 caracteres terminada em `\0`, escolhida pelo desenvolvedor
+- `request_save` retorna o save que já pertence ao id, ou reserva um save livre. Programas com o mesmo id usam o mesmo save
+- `request_save` também aceita um registrador com o endereço da string na ROM, como o obtido com `la`
+- Se não houver memory card, ou se todos os saves estiverem em uso, `request_save` retorna 0. O save 0 funciona como um save vazio: `read_save` sempre retorna 0 e `write_save` não faz nada, então o programa roda mesmo sem memory card
+- Endereços dentro do save vão de 0 a 16383
+- Cada `write_save` é gravado no arquivo na hora, nada se perde se o programa fechar
+- Ler ou escrever em um save que não foi requisitado, ou fora do save, encerra o programa com erro
+
+Por padrão, `./ZPrime run jogo.krom` usa o `save.zsave` que fica na mesma pasta do executavel, de qualquer diretorio. Outro memory card pode ser usado com `./ZPrime run jogo.krom outro.zsave`.
+
+Se o arquivo não existir, ZPrime pergunta se deve criar um. Recusando, o memory card padrão roda o programa sem memory card, e um memory card dado na linha de comando encerra o ZPrime.
+
+## Sistema de arquivos
+A tabela fica no começo do save 0, com 1 entrada de 19 bytes para cada save de 1 a 31:
+
+| Bytes | Conteudo |
+|-------|----------|
+| 1     | id do save (1 a 31) |
+| 1     | 1 se o save esta em uso, 0 se esta livre |
+| 17    | id do programa, 16 caracteres + nulo |
+
+Um arquivo de 512 KiB zerado é um memory card valido, a tabela é preenchida ao abrir.

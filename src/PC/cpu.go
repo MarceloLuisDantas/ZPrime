@@ -73,7 +73,6 @@ func NewCPU(file []string) (*CPU, error) {
 
 	cpu.ram = NewRam()
 	cpu.vram = NewVram()
-	cpu.memory_card = NewMemoryCard()
 
 	cpu.sp = 65535
 	cpu.fp = 65535
@@ -83,8 +82,8 @@ func NewCPU(file []string) (*CPU, error) {
 	return &cpu, nil
 }
 
-func (cpu *CPU) LoadSave(saves []byte) {
-	cpu.memory_card.Load(saves)
+func (cpu *CPU) SetMemoryCard(mc *MemoryCard) {
+	cpu.memory_card = mc
 }
 
 func (cpu *CPU) SetRegister(dest string, value int16) {
@@ -455,6 +454,85 @@ func (cpu *CPU) Lvr(dest string, offset int16, reg_index string) {
 	cpu.SetRegister(dest, int16(cpu.vram.vram[y][x]))
 }
 
+// Le o id do programa da ROM, string terminada em nulo
+func (cpu *CPU) readProgramId(point uint16) []byte {
+	program_id := []byte{}
+	for i := range uint16(PROGRAM_ID_SIZE) {
+		addr := cpu.gp + point + i
+		v, err := strconv.Atoi(cpu.rom.rom[addr])
+		if err != nil || v < 0 || v > 255 {
+			println("Valor \"", cpu.rom.rom[addr], "\" invalido no id do programa.")
+			panic("id do programa invalido")
+		}
+
+		if v == 0 {
+			return program_id
+		}
+		program_id = append(program_id, uint8(v))
+	}
+
+	println("id do programa deve ter no maximo", PROGRAM_ID_SIZE-1, "caracteres e terminar em \\0.")
+	panic("id do programa invalido")
+}
+
+// Sem memory card o save 0 é retornado, e ele funciona como um save vazio
+// que descarta o que é escrito
+func (cpu *CPU) RequestSave(point uint16) {
+	program_id := cpu.readProgramId(point)
+	if cpu.memory_card == nil {
+		cpu.rt = 0
+		return
+	}
+
+	save_id, err := cpu.memory_card.Request(program_id)
+	if err != nil {
+		println(err.Error())
+		panic("Erro ao requisitar save")
+	}
+	cpu.rt = int16(save_id)
+}
+
+func (cpu *CPU) ReadSave(save_id_reg, address_reg string) {
+	save_id := int(cpu.GetRegister(save_id_reg))
+	address := uint16(cpu.GetRegister(address_reg))
+	if save_id == 0 {
+		cpu.rt = 0
+		return
+	}
+
+	if cpu.memory_card == nil {
+		println("Save", save_id, "lido sem memory card.")
+		panic("Erro ao ler save")
+	}
+
+	value, err := cpu.memory_card.Read(save_id, address)
+	if err != nil {
+		println(err.Error())
+		panic("Erro ao ler save")
+	}
+	cpu.rt = int16(value)
+}
+
+func (cpu *CPU) WriteSave(save_id_reg, address_reg, value_reg string) {
+	save_id := int(cpu.GetRegister(save_id_reg))
+	address := uint16(cpu.GetRegister(address_reg))
+	value := uint8(cpu.GetRegister(value_reg))
+	if save_id == 0 {
+		return
+	}
+
+	if cpu.memory_card == nil {
+		println("Save", save_id, "escrito sem memory card.")
+		panic("Erro ao escrever save")
+	}
+
+	err := cpu.memory_card.Write(save_id, address, value)
+	if err != nil {
+		println(err.Error())
+		panic("Erro ao escrever save")
+	}
+}
+
 func (cpu *CPU) RenderFrame() {
 	rl.ClearBackground(rl.Black)
 	rl.BeginDrawing()
@@ -723,6 +801,20 @@ func (cpu *CPU) ExecCurrentInstruction(tokens []string) int {
 	case "lw":
 		offset, _ := strconv.Atoi(tokens[2])
 		cpu.Lw(tokens[1], int16(offset), tokens[3])
+
+	case "request_save":
+		if tokens[1][0] == '$' {
+			cpu.RequestSave(uint16(cpu.GetRegister(tokens[1])))
+		} else {
+			point, _ := strconv.Atoi(tokens[1])
+			cpu.RequestSave(uint16(point))
+		}
+
+	case "read_save":
+		cpu.ReadSave(tokens[1], tokens[2])
+
+	case "write_save":
+		cpu.WriteSave(tokens[1], tokens[2], tokens[3])
 
 	case "syscall":
 		cpu.Syscall()

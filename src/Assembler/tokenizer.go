@@ -23,7 +23,7 @@ var KEY_WORDS = map[string]bool{
 	"lrw": true, "lrb": true,
 	"inc": true, "dec": true,
 	"syscall": true, "return": true, "rand": true,
-	"nop": true,
+	"nop": true, "request_save": true, "read_save": true, "write_save": true,
 }
 
 var SECTIONS = map[string]bool{

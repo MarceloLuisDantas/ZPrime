@@ -59,12 +59,17 @@ const (
 	SYSCALL string = "syscall"
 	RETURN  string = "return"
 	RAND    string = "rand"
+
+	REQUEST_SAVE string = "request_save"
+	READ_SAVE    string = "read_save"
+	WRITE_SAVE   string = "write_save"
 )
 
 var RegistersInstructions = map[string]bool{
 	ADD: true, SUB: true, MULT: true, DIV: true,
 	ADDU: true, SUBU: true, MULTU: true, DIVU: true,
 	OR: true, AND: true, SLT: true, SLTU: true,
+	WRITE_SAVE: true,
 }
 
 var ImmediateInstructions = map[string]bool{
@@ -546,6 +551,29 @@ func (parser *Parser) parseRand() error {
 	return nil
 }
 
+// request_save *label
+// request_save $r1
+func (parser *Parser) parseRequestSave() error {
+	current_token, _ := parser.getCurrentToken()
+	ins := Instruction{current_token.Value}
+
+	arg := parser.getNextXToken(1)
+	if arg.TokenType != LABEL_REF && arg.TokenType != REGISTER {
+		return invalidRegOrLabel(arg)
+	}
+
+	nl := parser.getNextXToken(2)
+	if nl.TokenType != NEW_LINE {
+		return toMuchArgs(current_token, 1)
+	}
+
+	ins = append(ins, arg.Value)
+	parser.Instructions = append(parser.Instructions, ins)
+	parser.Len += 2
+	parser.Position += 3
+	return nil
+}
+
 func (parser *Parser) parseJumpLabelDef() error {
 	current_token, _ := parser.getCurrentToken()
 	parser.JumpLabels[current_token.Value] = parser.Len
@@ -728,8 +756,10 @@ func (parser *Parser) Parse() ([]Instruction, int) {
 			err = parser.parseIncDec()
 		} else if currentToken.Value == "return" || currentToken.Value == "syscall" {
 			err = parser.parseSyscallReturn()
-		} else if currentToken.Value == "move" {
+		} else if currentToken.Value == "move" || currentToken.Value == READ_SAVE {
 			err = parser.parseMove()
+		} else if currentToken.Value == REQUEST_SAVE {
+			err = parser.parseRequestSave()
 		} else if currentToken.Value == "li" {
 			err = parser.parseLi()
 		} else if currentToken.Value == "la" {

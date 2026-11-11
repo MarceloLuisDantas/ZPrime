@@ -1,0 +1,32 @@
+22
+request_save
+0 
+move
+$t1 $rt 
+li
+$t0 100 
+read_save
+$t1 $t0 
+inc
+$rt 
+write_save
+$t1 $t0 $rt 
+move
+$t0 $rt 
+li
+$sc 1003 
+sys
+call
+li
+$sc 0 
+sys
+call
+99
+111
+110
+116
+97
+100
+111
+114
+0

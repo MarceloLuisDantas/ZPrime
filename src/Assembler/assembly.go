@@ -21,6 +21,10 @@ func replaceLabelsRef(ins []Instruction, parser *Parser) error {
 			if value[3][0] != '$' {
 				label = value[3]
 			}
+		} else if op == "request_save" {
+			if value[1][0] != '$' {
+				label = value[1]
+			}
 		}
 
 		if label != "" {
@@ -43,6 +47,8 @@ func replaceLabelsRef(ins []Instruction, parser *Parser) error {
 
 				if op == "la" {
 					ins[i][2] = strconv.Itoa(line)
+				} else if op == "request_save" {
+					ins[i][1] = strconv.Itoa(line)
 				} else {
 					ins[i][3] = strconv.Itoa(line)
 				}

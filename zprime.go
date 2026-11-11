@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	assembler "zprime/src/Assembler"
 	pc "zprime/src/PC"
@@ -16,21 +18,37 @@ func load_file(file_name string) string {
 	return string(data)
 }
 
+func usage() {
+	fmt.Println("Use: zprime")
+	fmt.Println("    Compile: zprime as file.asm")
+	fmt.Println("    Run: zprime run file.krom memorycard.zsave [optional]")
+	fmt.Println("         Without memorycard.zsave, save.zsave next to zprime is used")
+	os.Exit(0)
+}
+
+// Retorna o memory card dado na linha de comando, ou o save.zsave que fica
+// na mesma pasta do executavel
+func memoryCardPath() (string, bool) {
+	if len(os.Args) >= 4 {
+		return os.Args[3], false
+	}
+
+	exe, err := os.Executable()
+	if err != nil {
+		return "save.zsave", true
+	}
+	return filepath.Join(filepath.Dir(exe), "save.zsave"), true
+}
+
 func main() {
 
 	if len(os.Args) < 3 {
-		fmt.Println("Use: zprime")
-		fmt.Println("    Compile: zprime as file.asm")
-		fmt.Println("    Run: zprime run file.krom memorycard.zsave [optional]")
-		os.Exit(0)
+		usage()
 	}
 
 	option := os.Args[1]
 	if option != "as" && option != "run" {
-		fmt.Println("Use: zprime")
-		fmt.Println("    Compile: zprime as file.asm")
-		fmt.Println("    Run: zprime run file.krom zprime.zsave [optional]")
-		os.Exit(0)
+		usage()
 	}
 
 	file_name := os.Args[2]
@@ -42,48 +60,41 @@ func main() {
 		}
 		assembler.Assembler(data, file_name)
 	case "run":
-		load_save := true
-		if len(os.Args) < 4 {
-			println("Save file not found; continue without Memory Card? [Y\\N]")
-			var escolha string
-			fmt.Scan(&escolha)
-			if escolha != "Y" {
-				return
-			}
-			load_save = false
-		}
 		cpu, err := pc.NewCPU(strings.Split(data, "\n"))
 		if err != nil {
 			println(err.Error())
 			return
 		}
 
-		if load_save {
-			saves_raw, err := os.ReadFile(os.Args[3])
-			if err != nil {
-				if strings.Split(err.Error(), ":")[1] == " no such file or directory" {
-					println("Memory Card: ", os.Args[3], " not found.")
-					println("Want to create Memory Card file? [Y\\N]")
-					var escolha string
-					fmt.Scan(&escolha)
-					if escolha != "Y" {
-						return
-					}
-
-					file := make([]byte, 1048576)
-					err := os.WriteFile(os.Args[3], file, 0644)
-					if err != nil {
-						panic(err)
-					}
-					saves_raw, err = os.ReadFile(os.Args[3])
-					if err != nil {
-						panic(err)
-					}
-				} else {
+		card_path, default_card := memoryCardPath()
+		mc, err := pc.OpenMemoryCard(card_path)
+		if errors.Is(err, os.ErrNotExist) {
+			println("Memory Card: ", card_path, " not found.")
+			println("Want to create Memory Card file? [Y\\N]")
+			var escolha string
+			fmt.Scan(&escolha)
+			if escolha == "Y" {
+				err = pc.CreateMemoryCard(card_path)
+				if err != nil {
 					panic(err)
 				}
+				mc, err = pc.OpenMemoryCard(card_path)
+			} else if default_card {
+				println("Running without Memory Card.")
+				err = nil
+			} else {
+				return
 			}
-			cpu.LoadSave(saves_raw)
+		}
+
+		if err != nil {
+			println(err.Error())
+			return
+		}
+
+		if mc != nil {
+			defer mc.Close()
+			cpu.SetMemoryCard(mc)
 		}
 
 		// cpu.ShowRom()
