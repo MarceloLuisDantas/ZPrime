@@ -1,0 +1,197 @@
+132
+j
+60 
+lrb
+$t0 0 $t5 
+beq
+$t0 $zero 18 
+sll
+$t0 $t0 8 
+or
+$t0 $t0 $t3 
+svr
+$t0 0 $t1 
+inc
+$t5 
+inc
+$t1 
+j
+2 
+ret
+urn
+move
+$t2 $t0 
+li
+$t3 0 
+inc
+$t3 
+divui
+$t2 $t2 10 
+bne
+$t2 $zero 24 
+divui
+$t2 $t3 2 
+sub
+$t1 $t1 $t2 
+add
+$t1 $t1 $t3 
+dec
+$t1 
+divui
+$t2 $t0 10 
+multui
+$t4 $t2 10 
+subu
+$t4 $t0 $t4 
+addi
+$t4 $t4 48 
+sll
+$t4 $t4 8 
+ori
+$t4 $t4 112 
+svr
+$t4 0 $t1 
+dec
+$t1 
+move
+$t0 $t2 
+bne
+$t0 $zero 38 
+ret
+urn
+request_save
+0 
+move
+$t5 $rt 
+sb
+$t5 16 $zero 
+li
+$t0 0 
+read_save
+$t5 $t0 
+sll
+$t1 $rt 8 
+li
+$t0 1 
+read_save
+$t5 $t0 
+or
+$t1 $t1 $rt 
+inc
+$t1 
+sw
+$t1 18 $zero 
+li
+$t0 0 
+srl
+$t2 $t1 8 
+write_save
+$t5 $t0 $t2 
+li
+$t0 1 
+write_save
+$t5 $t0 $t1 
+la
+$t5 17 
+li
+$t1 1578 
+li
+$t3 16 
+jal
+2 
+lw
+$t0 18 $zero 
+li
+$t1 1710 
+jal
+20 
+la
+$t5 42 
+li
+$t1 1827 
+li
+$t3 16 
+jal
+2 
+lb
+$t0 16 $zero 
+bne
+$t0 $zero 126 
+la
+$t5 48 
+li
+$t1 2002 
+li
+$t3 48 
+jal
+2 
+li
+$sc 100 
+sys
+call
+j
+126 
+99
+111
+110
+116
+97
+100
+111
+114
+95
+103
+114
+97
+102
+105
+99
+111
+0
+86
+79
+67
+69
+32
+65
+66
+82
+73
+85
+32
+69
+83
+84
+69
+32
+80
+82
+79
+71
+82
+65
+77
+65
+0
+86
+69
+90
+69
+83
+0
+83
+69
+77
+32
+77
+69
+77
+79
+82
+89
+32
+67
+65
+82
+68
+0
